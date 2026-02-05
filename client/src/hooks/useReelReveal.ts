@@ -1,49 +1,40 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 
 const REVEAL_INTERVAL_MS = 1000;
+const INITIAL_STATE = { revealedCount: 0, spinning: false };
 
-interface ReelRevealState {
-  revealedCount: number;
-  spinning: boolean;
-}
+type OnComplete<T> = (items: T[]) => void;
 
 export function useReelReveal<T>() {
-  const [state, setState] = useState<ReelRevealState>({ revealedCount: 0, spinning: false });
-  const onCompleteRef = useRef<((items: T[]) => void) | null>(null);
-  const itemsRef = useRef<T[] | null>(null);
+  const [state, setState] = useState(INITIAL_STATE);
+  const itemsRef = useRef<T[]>([]);
+  const onCompleteRef = useRef<OnComplete<T> | null>(null);
+
+  const scheduleReveal = (revealed: number, total: number) =>
+    setTimeout(() => {
+      const done = revealed >= total;
+      setState({ revealedCount: revealed, spinning: !done });
+      if (done) onCompleteRef.current?.(itemsRef.current);
+    }, revealed * REVEAL_INTERVAL_MS);
 
   useEffect(() => {
-    if (!state.spinning || !itemsRef.current) return;
-
-    const count = itemsRef.current.length;
-    const timers: ReturnType<typeof setTimeout>[] = [];
-
-    for (let i = 1; i <= count; i++) {
-      timers.push(
-        setTimeout(() => {
-          setState((prev) => {
-            const newCount = prev.revealedCount + 1;
-            const done = newCount >= count;
-            if (done) onCompleteRef.current?.(itemsRef.current!);
-            return { revealedCount: newCount, spinning: !done };
-          });
-        }, i * REVEAL_INTERVAL_MS),
-      );
-    }
-
+    if (!state.spinning) return;
+    const total = itemsRef.current.length;
+    const timers = Array.from({ length: total }, (_, i) => scheduleReveal(i + 1, total));
     return () => timers.forEach(clearTimeout);
+  
   }, [state.spinning]);
 
-  const startReveal = useCallback((items: T[], onComplete: (items: T[]) => void) => {
+  const startReveal = useCallback((items: T[], onComplete: OnComplete<T>) => {
     itemsRef.current = items;
     onCompleteRef.current = onComplete;
     setState({ revealedCount: 0, spinning: true });
   }, []);
 
   const resetReveal = useCallback(() => {
-    itemsRef.current = null;
+    itemsRef.current = [];
     onCompleteRef.current = null;
-    setState({ revealedCount: 0, spinning: false });
+    setState(INITIAL_STATE);
   }, []);
 
   return { ...state, startReveal, resetReveal };
