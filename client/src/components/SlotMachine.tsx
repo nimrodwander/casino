@@ -29,9 +29,6 @@ export const SlotMachine: React.FC = observer(() => {
   if (!store.sessionId) {
     return (
       <Box sx={{ textAlign: 'center' }}>
-        <Typography variant="h3" sx={{ mb: 1 }}>
-          Casino Jackpot
-        </Typography>
         <Typography variant="body1" sx={{ mb: 3 }}>
           Try your luck on the slots!
         </Typography>
@@ -44,10 +41,6 @@ export const SlotMachine: React.FC = observer(() => {
 
   return (
     <Box sx={{ textAlign: 'center' }}>
-      <Typography variant="h3" sx={{ mb: 1 }}>
-        Casino Jackpot
-      </Typography>
-
       <CreditDisplay credits={store.credits} />
 
       <Stack direction="row" spacing={2} justifyContent="center" sx={{ mb: 2 }}>
