@@ -1,31 +1,21 @@
 import { makeAutoObservable, runInAction } from 'mobx';
-import type { SymbolTriplet } from '@casino/shared';
+import type { SymbolTriplet, RollResponse } from '@casino/shared';
 import { apiService } from '../services/api.service';
 
 export class SlotMachineStore {
-  public sessionId: string | null = null;
-  public credits: number = 0;
-  public symbols: SymbolTriplet | null = null;
-  public revealedCount: number = 0;
-  public spinning: boolean = false;
-  public rolling: boolean = false;
-  public message: string | null = null;
-  public gameOver: boolean = false;
-
-  private timers: ReturnType<typeof setTimeout>[] = [];
+  sessionId: string | null = null;
+  credits = 0;
+  symbols: SymbolTriplet | null = null;
+  lastRoll: RollResponse | null = null;
+  message: string | null = null;
+  gameOver = false;
 
   constructor() {
-    makeAutoObservable(this, { timers: false } as any);
+    makeAutoObservable(this);
   }
 
-  private clearTimers(): void {
-    this.timers.forEach(clearTimeout);
-    this.timers = [];
-  }
-
-  public async startGame(): Promise<void> {
+  async startGame(): Promise<void> {
     try {
-      this.clearTimers();
       const { sessionId, credits } = await apiService.createSession();
       runInAction(() => {
         this.reset();
@@ -39,47 +29,37 @@ export class SlotMachineStore {
     }
   }
 
-  public async rollSlots(): Promise<void> {
-    if (!this.sessionId || this.spinning || this.gameOver) return;
+  async roll(): Promise<RollResponse | null> {
+    if (!this.sessionId || this.gameOver) return null;
 
-    this.spinning = true;
-    this.rolling = true;
-    this.revealedCount = 0;
     this.symbols = null;
     this.message = null;
 
     try {
       const result = await apiService.roll(this.sessionId);
-
       runInAction(() => {
+        this.lastRoll = result;
         this.symbols = result.symbols;
-        this.rolling = false;
       });
-
-      const t1 = setTimeout(() => runInAction(() => { this.revealedCount++; }), 1000);
-      const t2 = setTimeout(() => runInAction(() => { this.revealedCount++; }), 2000);
-      const t3 = setTimeout(() => runInAction(() => {
-        this.revealedCount++;
-        this.spinning = false;
-        this.credits = result.credits;
-        this.message = result.win
-          ? `You won ${result.reward} credits!`
-          : 'No luck this time.';
-        this.gameOver = result.credits <= 0;
-      }), 3000);
-
-      this.timers = [t1, t2, t3];
+      return result;
     } catch {
       runInAction(() => {
-        this.spinning = false;
-        this.rolling = false;
         this.message = 'Roll failed. Try again.';
       });
+      return null;
     }
   }
 
-  public async cashOutCredits(): Promise<void> {
-    if (!this.sessionId || this.spinning) return;
+  applyRollResult(result: RollResponse): void {
+    this.credits = result.credits;
+    this.message = result.win
+      ? `You won ${result.reward} credits!`
+      : 'No luck this time.';
+    this.gameOver = result.credits <= 0;
+  }
+
+  async cashOut(): Promise<void> {
+    if (!this.sessionId) return;
 
     try {
       const result = await apiService.cashOut(this.sessionId);
@@ -94,14 +74,11 @@ export class SlotMachineStore {
     }
   }
 
-  public reset(): void {
-    this.clearTimers();
+  reset(): void {
     this.sessionId = null;
     this.credits = 0;
     this.symbols = null;
-    this.revealedCount = 0;
-    this.spinning = false;
-    this.rolling = false;
+    this.lastRoll = null;
     this.message = null;
     this.gameOver = false;
   }
