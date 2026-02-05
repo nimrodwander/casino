@@ -18,7 +18,7 @@ export const Header: React.FC = observer(() => (
       </Box>
       <Box sx={{ flexGrow: 1 }} />
       <IconButton>
-        <AccountCircleIcon />
+        <AccountCircleIcon sx={{ fontSize: 32 }}/>
       </IconButton>
     </Toolbar>
   </AppBar>
