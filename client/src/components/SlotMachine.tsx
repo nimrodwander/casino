@@ -61,11 +61,6 @@ export const SlotMachine: React.FC = observer(() => {
         ))}
       </Stack>
 
-      {store.message && (
-        <Typography variant="body1" sx={{ mb: 2 }}>
-          {store.message}
-        </Typography>
-      )}
 
       <Stack direction="row" spacing={2} justifyContent="center" sx={{ mb: 3 }}>
         {store.gameOver ? (
@@ -79,16 +74,22 @@ export const SlotMachine: React.FC = observer(() => {
               size="large"
               onClick={handleRoll}
               disabled={spinning || store.credits <= 0}
-            >
+              >
               {spinning ? 'Rolling...' : 'Roll'}
             </Button>
             <CashOutButton
               onCashOut={() => store.cashOut()}
               disabled={spinning}
-            />
+              />
           </>
         )}
       </Stack>
+      
+      {store.message && (
+        <Typography variant="body1" sx={{ mb: 2 }}>
+          {store.message}
+        </Typography>
+      )}
 
     </Box>
   );
