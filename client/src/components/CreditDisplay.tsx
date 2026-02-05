@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography } from '@mui/material';
+import { Chip } from '@mui/material';
 
 interface CreditDisplayProps {
   credits: number;
@@ -7,13 +7,15 @@ interface CreditDisplayProps {
 
 export const CreditDisplay: React.FC<CreditDisplayProps> = ({ credits }) => {
   return (
-    <Box>
-      <Typography component="span" variant="h6" sx={{ mr: 1 }}>
-        Credits:
-      </Typography>
-      <Typography component="span" variant="h5">
-        {credits}
-      </Typography>
-    </Box>
+    <Chip
+      label={`Credits ${credits}`}
+      sx={{
+        bgcolor: '#1e3a5f',
+        color: 'secondary.main',
+        fontWeight: 'bold',
+        fontSize: '0.9rem',
+        px: 1,
+      }}
+    />
   );
 };
