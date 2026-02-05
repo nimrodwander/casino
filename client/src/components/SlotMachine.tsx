@@ -90,9 +90,6 @@ export const SlotMachine: React.FC = observer(() => {
         )}
       </Stack>
 
-      <Typography variant="caption">
-        C = Cherry (10) | L = Lemon (20) | O = Orange (30) | W = Watermelon (40)
-      </Typography>
     </Box>
   );
 });
