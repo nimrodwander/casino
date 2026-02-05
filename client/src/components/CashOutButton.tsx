@@ -1,3 +1,4 @@
+import React from 'react';
 import { Button } from '@mui/material';
 
 interface CashOutButtonProps {
@@ -5,10 +6,10 @@ interface CashOutButtonProps {
   disabled: boolean;
 }
 
-export function CashOutButton({ onCashOut, disabled }: CashOutButtonProps) {
+export const CashOutButton: React.FC<CashOutButtonProps> = ({ onCashOut, disabled }) => {
   return (
     <Button variant="contained" color="success" size="large" onClick={onCashOut} disabled={disabled}>
       Cash Out
     </Button>
   );
-}
+};

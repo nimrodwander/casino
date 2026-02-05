@@ -1,3 +1,4 @@
+import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { Box, Typography, Button, Stack } from '@mui/material';
 import { Reel } from './Reel';
@@ -5,7 +6,7 @@ import { CreditDisplay } from './CreditDisplay';
 import { CashOutButton } from './CashOutButton';
 import { slotMachineStore } from '../stores/SlotMachineStore';
 
-export const SlotMachine = observer(function SlotMachine() {
+export const SlotMachine: React.FC = observer(() => {
   const store = slotMachineStore;
 
   if (!store.sessionId) {

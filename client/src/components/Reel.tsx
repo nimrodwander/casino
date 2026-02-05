@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Paper, Typography } from '@mui/material';
 import type { SlotSymbol } from '@casino/shared';
 import { SYMBOL_NAMES } from '@casino/shared';
@@ -12,7 +12,7 @@ interface ReelProps {
 const SPIN_CHARS = ['X', '*', '#', '+'];
 const SPIN_INTERVAL_MS = 100;
 
-export function Reel({ symbol, revealed, spinning }: ReelProps) {
+export const Reel: React.FC<ReelProps> = ({ symbol, revealed, spinning }) => {
   const [spinChar, setSpinChar] = useState('X');
 
   useEffect(() => {
@@ -61,4 +61,4 @@ export function Reel({ symbol, revealed, spinning }: ReelProps) {
       </Typography>
     </Paper>
   );
-}
+};

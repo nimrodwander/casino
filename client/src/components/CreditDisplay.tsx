@@ -1,10 +1,11 @@
+import React from 'react';
 import { Box, Typography } from '@mui/material';
 
 interface CreditDisplayProps {
   credits: number;
 }
 
-export function CreditDisplay({ credits }: CreditDisplayProps) {
+export const CreditDisplay: React.FC<CreditDisplayProps> = ({ credits }) => {
   return (
     <Box sx={{ mb: 2 }}>
       <Typography component="span" sx={{ color: 'text.secondary', mr: 1, fontSize: '1.3rem' }}>
@@ -15,4 +16,4 @@ export function CreditDisplay({ credits }: CreditDisplayProps) {
       </Typography>
     </Box>
   );
-}
+};
