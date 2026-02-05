@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, act } from '@testing-library/react';
+import { ThemeProvider, createTheme } from '@mui/material';
 import { SlotMachine } from '../components/SlotMachine';
+import { slotMachineStore } from '../stores/SlotMachineStore';
 
 // Mock the API client
 vi.mock('../api/client', () => ({
@@ -15,13 +17,24 @@ const mockCreateSession = vi.mocked(api.createSession);
 const mockRoll = vi.mocked(api.roll);
 const mockCashOut = vi.mocked(api.cashOut);
 
+const theme = createTheme({ palette: { mode: 'dark' } });
+
+function renderWithTheme() {
+  return render(
+    <ThemeProvider theme={theme}>
+      <SlotMachine />
+    </ThemeProvider>
+  );
+}
+
 describe('SlotMachine', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    slotMachineStore.reset();
   });
 
   it('should render start screen initially', () => {
-    render(<SlotMachine />);
+    renderWithTheme();
     expect(screen.getByText('Casino Jackpot')).toBeInTheDocument();
     expect(screen.getByText('Start Game')).toBeInTheDocument();
   });
@@ -29,7 +42,7 @@ describe('SlotMachine', () => {
   it('should start a game session', async () => {
     mockCreateSession.mockResolvedValue({ sessionId: 'test-id', credits: 10 });
 
-    render(<SlotMachine />);
+    renderWithTheme();
 
     await act(async () => {
       fireEvent.click(screen.getByText('Start Game'));
@@ -43,14 +56,15 @@ describe('SlotMachine', () => {
   it('should render 3 reel blocks after game starts', async () => {
     mockCreateSession.mockResolvedValue({ sessionId: 'test-id', credits: 10 });
 
-    render(<SlotMachine />);
+    renderWithTheme();
 
     await act(async () => {
       fireEvent.click(screen.getByText('Start Game'));
     });
 
-    const reels = document.querySelectorAll('.reel');
-    expect(reels).toHaveLength(3);
+    // Each reel displays '-' when idle
+    const dashes = screen.getAllByText('-');
+    expect(dashes).toHaveLength(3);
   });
 
   it('should show rolling state and reveal symbols sequentially', async () => {
@@ -63,7 +77,7 @@ describe('SlotMachine', () => {
       credits: 9,
     });
 
-    render(<SlotMachine />);
+    renderWithTheme();
 
     // Start game
     await act(async () => {
@@ -110,7 +124,7 @@ describe('SlotMachine', () => {
       credits: 19,
     });
 
-    render(<SlotMachine />);
+    renderWithTheme();
 
     await act(async () => {
       fireEvent.click(screen.getByText('Start Game'));
@@ -138,7 +152,7 @@ describe('SlotMachine', () => {
       message: 'Cashed out 10 credits. Thanks for playing!',
     });
 
-    render(<SlotMachine />);
+    renderWithTheme();
 
     await act(async () => {
       fireEvent.click(screen.getByText('Start Game'));

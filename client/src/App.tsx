@@ -1,10 +1,10 @@
+import { Container } from '@mui/material';
 import { SlotMachine } from './components/SlotMachine';
-import './styles/App.css';
 
 export function App() {
   return (
-    <div className="app">
+    <Container maxWidth="sm" sx={{ py: 4 }}>
       <SlotMachine />
-    </div>
+    </Container>
   );
 }

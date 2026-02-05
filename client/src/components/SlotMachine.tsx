@@ -1,84 +1,86 @@
+import { observer } from 'mobx-react-lite';
+import { Box, Typography, Button, Stack } from '@mui/material';
 import { Reel } from './Reel';
 import { CreditDisplay } from './CreditDisplay';
 import { CashOutButton } from './CashOutButton';
-import { useSlotMachine } from '../hooks/useSlotMachine';
+import { slotMachineStore } from '../stores/SlotMachineStore';
 
-export function SlotMachine() {
-  const {
-    sessionId,
-    credits,
-    symbols,
-    revealedCount,
-    spinning,
-    message,
-    gameOver,
-    startGame,
-    rollSlots,
-    cashOutCredits,
-    resetGame,
-  } = useSlotMachine();
+export const SlotMachine = observer(function SlotMachine() {
+  const store = slotMachineStore;
 
-  // No session yet — show start screen
-  if (!sessionId) {
+  if (!store.sessionId) {
     return (
-      <div className="slot-machine">
-        <h1>Casino Jackpot</h1>
-        <p className="subtitle">Try your luck on the slots!</p>
-        <button className="btn btn-start" onClick={startGame}>
+      <Box sx={{ textAlign: 'center' }}>
+        <Typography variant="h3" sx={{ color: 'secondary.main', mb: 1 }}>
+          Casino Jackpot
+        </Typography>
+        <Typography sx={{ color: 'text.secondary', mb: 3 }}>
+          Try your luck on the slots!
+        </Typography>
+        <Button variant="contained" size="large" onClick={() => store.startGame()}>
           Start Game
-        </button>
-      </div>
+        </Button>
+      </Box>
     );
   }
 
   return (
-    <div className="slot-machine">
-      <h1>Casino Jackpot</h1>
+    <Box sx={{ textAlign: 'center' }}>
+      <Typography variant="h3" sx={{ color: 'secondary.main', mb: 1 }}>
+        Casino Jackpot
+      </Typography>
 
-      <CreditDisplay credits={credits} />
+      <CreditDisplay credits={store.credits} />
 
-      <div className="reels">
+      <Stack direction="row" spacing={2} justifyContent="center" sx={{ mb: 2 }}>
         {[0, 1, 2].map((index) => (
           <Reel
             key={index}
-            symbol={symbols ? symbols[index] : null}
-            revealed={revealedCount > index}
-            spinning={spinning}
+            symbol={store.symbols ? store.symbols[index] : null}
+            revealed={store.revealedCount > index}
+            spinning={store.spinning}
           />
         ))}
-      </div>
+      </Stack>
 
-      {message && (
-        <p className={`message ${message.includes('won') ? 'win' : ''}`}>
-          {message}
-        </p>
+      {store.message && (
+        <Typography
+          sx={{
+            mb: 2,
+            fontWeight: store.message.includes('won') ? 'bold' : 'normal',
+            color: store.message.includes('won') ? 'success.main' : 'text.secondary',
+          }}
+        >
+          {store.message}
+        </Typography>
       )}
 
-      <div className="controls">
-        {gameOver ? (
-          <button className="btn btn-start" onClick={resetGame}>
+      <Stack direction="row" spacing={2} justifyContent="center" sx={{ mb: 3 }}>
+        {store.gameOver ? (
+          <Button variant="contained" size="large" onClick={() => store.reset()}>
             New Game
-          </button>
+          </Button>
         ) : (
           <>
-            <button
-              className="btn btn-roll"
-              onClick={rollSlots}
-              disabled={spinning || credits <= 0}
+            <Button
+              variant="contained"
+              size="large"
+              onClick={() => store.rollSlots()}
+              disabled={store.spinning || store.credits <= 0}
             >
-              {spinning ? 'Rolling...' : 'Roll'}
-            </button>
+              {store.spinning ? 'Rolling...' : 'Roll'}
+            </Button>
             <CashOutButton
-              onCashOut={cashOutCredits}
-              disabled={spinning}
+              onCashOut={() => store.cashOutCredits()}
+              disabled={store.spinning}
             />
           </>
         )}
-      </div>
+      </Stack>
 
-      <div className="legend">
-        <p>C = Cherry (10) | L = Lemon (20) | O = Orange (30) | W = Watermelon (40)</p>
-      </div>
-    </div>
+      <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+        C = Cherry (10) | L = Lemon (20) | O = Orange (30) | W = Watermelon (40)
+      </Typography>
+    </Box>
   );
-}
+});

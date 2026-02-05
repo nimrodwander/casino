@@ -1,3 +1,5 @@
+import { Button } from '@mui/material';
+
 interface CashOutButtonProps {
   onCashOut: () => void;
   disabled: boolean;
@@ -5,12 +7,8 @@ interface CashOutButtonProps {
 
 export function CashOutButton({ onCashOut, disabled }: CashOutButtonProps) {
   return (
-    <button
-      className="btn btn-cashout"
-      onClick={onCashOut}
-      disabled={disabled}
-    >
+    <Button variant="contained" color="success" size="large" onClick={onCashOut} disabled={disabled}>
       Cash Out
-    </button>
+    </Button>
   );
 }
