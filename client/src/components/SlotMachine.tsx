@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { runInAction } from 'mobx';
 import { Box, Typography, Button, Stack } from '@mui/material';
 import { Reel } from './Reel';
-import { CreditDisplay } from './CreditDisplay';
+
 import { CashOutButton } from './CashOutButton';
 import type { SlotSymbol } from '@casino/shared';
 import { slotMachineStore } from '../stores/SlotMachineStore';
@@ -41,8 +41,6 @@ export const SlotMachine: React.FC = observer(() => {
 
   return (
     <Box sx={{ textAlign: 'center' }}>
-      <CreditDisplay credits={store.credits} />
-
       <Stack direction="row" spacing={2} justifyContent="center" sx={{ mb: 2 }}>
         {[0, 1, 2].map((index) => (
           <Reel
