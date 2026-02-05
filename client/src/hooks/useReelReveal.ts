@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 
 const REVEAL_INTERVAL_MS = 1000;
-const INITIAL_STATE = { revealedCount: 0, spinning: false };
 
 type OnComplete<T> = (items: T[]) => void;
 
 export function useReelReveal<T>() {
+  const INITIAL_STATE = { revealedCount: 0, spinning: false };
   const [state, setState] = useState(INITIAL_STATE);
   const itemsRef = useRef<T[]>([]);
   const onCompleteRef = useRef<OnComplete<T> | null>(null);
