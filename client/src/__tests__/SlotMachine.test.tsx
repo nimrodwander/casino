@@ -4,18 +4,20 @@ import { ThemeProvider, createTheme } from '@mui/material';
 import { SlotMachine } from '../components/SlotMachine';
 import { slotMachineStore } from '../stores/SlotMachineStore';
 
-// Mock the API client
-vi.mock('../api/client', () => ({
-  createSession: vi.fn(),
-  roll: vi.fn(),
-  cashOut: vi.fn(),
+// Mock the API service
+vi.mock('../services/api.service', () => ({
+  apiService: {
+    createSession: vi.fn(),
+    roll: vi.fn(),
+    cashOut: vi.fn(),
+  },
 }));
 
-import * as api from '../api/client';
+import { apiService } from '../services/api.service';
 
-const mockCreateSession = vi.mocked(api.createSession);
-const mockRoll = vi.mocked(api.roll);
-const mockCashOut = vi.mocked(api.cashOut);
+const mockCreateSession = vi.mocked(apiService.createSession);
+const mockRoll = vi.mocked(apiService.roll);
+const mockCashOut = vi.mocked(apiService.cashOut);
 
 const theme = createTheme({ palette: { mode: 'dark' } });
 

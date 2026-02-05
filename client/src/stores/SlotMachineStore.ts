@@ -1,6 +1,6 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import type { SymbolTriplet } from '@casino/shared';
-import * as api from '../api/client';
+import { apiService } from '../services/api.service';
 
 export class SlotMachineStore {
   public sessionId: string | null = null;
@@ -26,7 +26,7 @@ export class SlotMachineStore {
   public async startGame(): Promise<void> {
     try {
       this.clearTimers();
-      const { sessionId, credits } = await api.createSession();
+      const { sessionId, credits } = await apiService.createSession();
       runInAction(() => {
         this.reset();
         this.sessionId = sessionId;
@@ -49,7 +49,7 @@ export class SlotMachineStore {
     this.message = null;
 
     try {
-      const result = await api.roll(this.sessionId);
+      const result = await apiService.roll(this.sessionId);
 
       runInAction(() => {
         this.symbols = result.symbols;
@@ -82,7 +82,7 @@ export class SlotMachineStore {
     if (!this.sessionId || this.spinning) return;
 
     try {
-      const result = await api.cashOut(this.sessionId);
+      const result = await apiService.cashOut(this.sessionId);
       runInAction(() => {
         this.gameOver = true;
         this.message = result.message;
