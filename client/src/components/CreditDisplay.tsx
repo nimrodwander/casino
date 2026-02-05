@@ -1,5 +1,6 @@
 import React from 'react';
 import { Chip } from '@mui/material';
+import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 
 interface CreditDisplayProps {
   credits: number;
@@ -8,6 +9,7 @@ interface CreditDisplayProps {
 export const CreditDisplay: React.FC<CreditDisplayProps> = ({ credits }) => {
   return (
     <Chip
+      icon={<MonetizationOnIcon sx={{ color: 'secondary.main', fontSize: 18 }} />}
       label={`Credits ${credits}`}
       sx={{
         bgcolor: '#1e3a5f',
