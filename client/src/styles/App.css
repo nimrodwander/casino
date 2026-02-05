@@ -1,0 +1,170 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: #1a1a2e;
+  color: #eee;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.app {
+  width: 100%;
+  max-width: 500px;
+  padding: 2rem;
+}
+
+.slot-machine {
+  text-align: center;
+}
+
+h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  color: #ffd700;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+.subtitle {
+  color: #aaa;
+  margin-bottom: 2rem;
+}
+
+/* Credit display */
+.credit-display {
+  font-size: 1.3rem;
+  margin-bottom: 1.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  display: inline-block;
+}
+
+.credit-label {
+  color: #aaa;
+  margin-right: 0.5rem;
+}
+
+.credit-value {
+  color: #ffd700;
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+
+/* Reels */
+.reels {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.reel {
+  width: 80px;
+  height: 80px;
+  background: #16213e;
+  border: 2px solid #0f3460;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reel-char {
+  font-size: 2.5rem;
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+  color: #eee;
+  transition: color 0.3s;
+}
+
+.reel-char.spinning {
+  color: #e94560;
+  animation: pulse 0.2s ease-in-out infinite alternate;
+}
+
+.reel-char.revealed {
+  color: #ffd700;
+  animation: pop 0.3s ease-out;
+}
+
+@keyframes pulse {
+  from { opacity: 0.5; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1.1); }
+}
+
+@keyframes pop {
+  0% { transform: scale(1.5); }
+  100% { transform: scale(1); }
+}
+
+/* Message */
+.message {
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+  color: #aaa;
+  min-height: 1.5rem;
+}
+
+.message.win {
+  color: #4ecca3;
+  font-weight: bold;
+}
+
+/* Controls */
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.btn {
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.1s, opacity 0.2s;
+}
+
+.btn:hover:not(:disabled) {
+  transform: scale(1.05);
+}
+
+.btn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn-start,
+.btn-roll {
+  background: #e94560;
+  color: white;
+}
+
+.btn-cashout {
+  background: #4ecca3;
+  color: #1a1a2e;
+}
+
+/* Legend */
+.legend {
+  color: #666;
+  font-size: 0.8rem;
+}
+
+.legend p {
+  line-height: 1.6;
+}
