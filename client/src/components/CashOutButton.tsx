@@ -8,7 +8,7 @@ interface CashOutButtonProps {
 
 export const CashOutButton: React.FC<CashOutButtonProps> = ({ onCashOut, disabled }) => {
   return (
-    <Button variant="contained" color="success" size="large" onClick={onCashOut} disabled={disabled}>
+    <Button variant="contained" size="large" onClick={onCashOut} disabled={disabled}>
       Cash Out
     </Button>
   );

@@ -12,10 +12,10 @@ export const SlotMachine: React.FC = observer(() => {
   if (!store.sessionId) {
     return (
       <Box sx={{ textAlign: 'center' }}>
-        <Typography variant="h3" sx={{ color: 'secondary.main', mb: 1 }}>
+        <Typography variant="h3" sx={{ mb: 1 }}>
           Casino Jackpot
         </Typography>
-        <Typography sx={{ color: 'text.secondary', mb: 3 }}>
+        <Typography variant="body1" sx={{ mb: 3 }}>
           Try your luck on the slots!
         </Typography>
         <Button variant="contained" size="large" onClick={() => store.startGame()}>
@@ -27,7 +27,7 @@ export const SlotMachine: React.FC = observer(() => {
 
   return (
     <Box sx={{ textAlign: 'center' }}>
-      <Typography variant="h3" sx={{ color: 'secondary.main', mb: 1 }}>
+      <Typography variant="h3" sx={{ mb: 1 }}>
         Casino Jackpot
       </Typography>
 
@@ -45,13 +45,7 @@ export const SlotMachine: React.FC = observer(() => {
       </Stack>
 
       {store.message && (
-        <Typography
-          sx={{
-            mb: 2,
-            fontWeight: store.message.includes('won') ? 'bold' : 'normal',
-            color: store.message.includes('won') ? 'success.main' : 'text.secondary',
-          }}
-        >
+        <Typography variant="body1" sx={{ mb: 2 }}>
           {store.message}
         </Typography>
       )}
@@ -79,7 +73,7 @@ export const SlotMachine: React.FC = observer(() => {
         )}
       </Stack>
 
-      <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+      <Typography variant="caption">
         C = Cherry (10) | L = Lemon (20) | O = Orange (30) | W = Watermelon (40)
       </Typography>
     </Box>

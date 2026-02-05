@@ -14,6 +14,8 @@ const SPIN_INTERVAL_MS = 100;
 
 export const Reel: React.FC<ReelProps> = ({ symbol, revealed, spinning }) => {
   const [spinChar, setSpinChar] = useState('X');
+  const displayChar = revealed && symbol ? symbol : spinning ? spinChar : '-';
+  const title = revealed && symbol ? SYMBOL_NAMES[symbol] : undefined;
 
   useEffect(() => {
     if (!spinning || revealed) return;
@@ -27,8 +29,6 @@ export const Reel: React.FC<ReelProps> = ({ symbol, revealed, spinning }) => {
     return () => clearInterval(interval);
   }, [spinning, revealed]);
 
-  const displayChar = revealed && symbol ? symbol : spinning ? spinChar : '-';
-  const title = revealed && symbol ? SYMBOL_NAMES[symbol] : undefined;
 
   return (
     <Paper
@@ -39,24 +39,9 @@ export const Reel: React.FC<ReelProps> = ({ symbol, revealed, spinning }) => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        border: 1,
-        borderColor: '#0f3460',
-        borderRadius: 3,
       }}
     >
-      <Typography
-        sx={{
-          fontSize: '2.5rem',
-          fontWeight: 'bold',
-          fontFamily: 'monospace',
-          color: spinning && !revealed ? 'primary.main' : revealed ? 'secondary.main' : 'text.primary',
-          '@keyframes pop': {
-            '0%': { transform: 'scale(1.5)' },
-            '100%': { transform: 'scale(1)' },
-          },
-          animation: revealed ? 'pop 0.3s ease-out' : undefined,
-        }}
-      >
+      <Typography variant="h4">
         {displayChar}
       </Typography>
     </Paper>

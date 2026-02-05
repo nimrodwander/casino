@@ -8,10 +8,10 @@ interface CreditDisplayProps {
 export const CreditDisplay: React.FC<CreditDisplayProps> = ({ credits }) => {
   return (
     <Box sx={{ mb: 2 }}>
-      <Typography component="span" sx={{ color: 'text.secondary', mr: 1, fontSize: '1.3rem' }}>
+      <Typography component="span" variant="h6" sx={{ mr: 1 }}>
         Credits:
       </Typography>
-      <Typography component="span" sx={{ color: 'secondary.main', fontWeight: 'bold', fontSize: '1.5rem' }}>
+      <Typography component="span" variant="h5">
         {credits}
       </Typography>
     </Box>
