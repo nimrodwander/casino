@@ -7,7 +7,6 @@ export class SlotMachineStore {
   public credits = 0;
   public symbols: SymbolTriplet | null = null;
   public lastRoll: RollResponse | null = null;
-  public gameOver = false;
 
   public constructor() {
     makeAutoObservable(this);
@@ -23,7 +22,7 @@ export class SlotMachineStore {
   }
 
   public async roll(): Promise<RollResponse | null> {
-    if (!this.sessionId || this.gameOver) return null;
+    if (!this.sessionId) return null;
 
     this.symbols = null;
 
@@ -37,16 +36,11 @@ export class SlotMachineStore {
 
   public applyRollResult(result: RollResponse): void {
     this.credits = result.credits;
-    this.gameOver = result.credits <= 0;
   }
 
   public async cashOut(): Promise<void> {
     if (!this.sessionId) return;
-
     await apiService.cashOut(this.sessionId);
-    runInAction(() => {
-      this.gameOver = true;
-    });
   }
 
   public reset(): void {
@@ -54,7 +48,6 @@ export class SlotMachineStore {
     this.credits = 0;
     this.symbols = null;
     this.lastRoll = null;
-    this.gameOver = false;
   }
 }
 
