@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { runInAction } from 'mobx';
-import { Box, Typography, Button, Stack } from '@mui/material';
+import { Box, Button, Stack, TextField } from '@mui/material';
 import { Reel } from './Reel';
 
 import { CashOutButton } from './CashOutButton';
@@ -29,9 +29,13 @@ export const SlotMachine: React.FC = observer(() => {
   if (!store.sessionId) {
     return (
       <Box sx={{ textAlign: 'center' }}>
-        <Typography variant="body1" sx={{ mb: 3 }}>
-          Try your luck on the slots!
-        </Typography>
+        <TextField
+          placeholder="Enter your ID"
+          variant="outlined"
+          fullWidth
+          sx={{ mb: 3, maxWidth: 400, mx: 'auto', backgroundColor: 'background.paper', borderRadius: 1, '& .MuiOutlinedInput-notchedOutline': { border: 'none' } }}
+          slotProps={{ input: { style: { fontSize: '1.5rem', textAlign: 'center' } } }}
+        />
         <Button variant="contained" size="large" onClick={() => store.startGame()}>
           Start Game
         </Button>
@@ -75,12 +79,6 @@ export const SlotMachine: React.FC = observer(() => {
           </>
         )}
       </Stack>
-      
-      {store.message && (
-        <Typography variant="body1" sx={{ mb: 2 }}>
-          {store.message}
-        </Typography>
-      )}
 
     </Box>
   );

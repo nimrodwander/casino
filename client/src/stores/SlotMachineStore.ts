@@ -7,7 +7,6 @@ export class SlotMachineStore {
   credits = 0;
   symbols: SymbolTriplet | null = null;
   lastRoll: RollResponse | null = null;
-  message: string | null = null;
   gameOver = false;
 
   constructor() {
@@ -23,9 +22,7 @@ export class SlotMachineStore {
         this.credits = credits;
       });
     } catch {
-      runInAction(() => {
-        this.message = 'Failed to start game.';
-      });
+      // start game failed
     }
   }
 
@@ -33,7 +30,6 @@ export class SlotMachineStore {
     if (!this.sessionId || this.gameOver) return null;
 
     this.symbols = null;
-    this.message = null;
 
     try {
       const result = await apiService.roll(this.sessionId);
@@ -43,18 +39,12 @@ export class SlotMachineStore {
       });
       return result;
     } catch {
-      runInAction(() => {
-        this.message = 'Roll failed. Try again.';
-      });
       return null;
     }
   }
 
   applyRollResult(result: RollResponse): void {
     this.credits = result.credits;
-    this.message = result.win
-      ? `You won ${result.reward} credits!`
-      : 'No luck this time.';
     this.gameOver = result.credits <= 0;
   }
 
@@ -62,15 +52,12 @@ export class SlotMachineStore {
     if (!this.sessionId) return;
 
     try {
-      const result = await apiService.cashOut(this.sessionId);
+      await apiService.cashOut(this.sessionId);
       runInAction(() => {
         this.gameOver = true;
-        this.message = result.message;
       });
     } catch {
-      runInAction(() => {
-        this.message = 'Cash out failed.';
-      });
+      // cash out failed
     }
   }
 
@@ -79,7 +66,6 @@ export class SlotMachineStore {
     this.credits = 0;
     this.symbols = null;
     this.lastRoll = null;
-    this.message = null;
     this.gameOver = false;
   }
 }
