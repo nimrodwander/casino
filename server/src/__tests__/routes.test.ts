@@ -5,17 +5,19 @@ import express from 'express';
 import { DataSource } from 'typeorm';
 import { Session } from '../entities/Session.js';
 import { setDataSource } from '../database.js';
-import { sessionMiddleware } from '../sessionConfig.js';
-import sessionRouter from '../routes/session.js';
-import { clearAllSessions, getPersistedSession } from '../services/sessionStore.js';
+import { sessionMiddleware } from '../config/session.js';
+import { SessionRouter } from '../routes/session.js';
+import { SessionRepository } from '../services/sessionRepository.js';
 
 let testDataSource: DataSource;
+let sessionRepository: SessionRepository;
 
 function createApp() {
   const app = express();
   app.use(express.json());
   app.use(sessionMiddleware);
-  app.use('/api/session', sessionRouter);
+  const sessionRouter = new SessionRouter(sessionRepository);
+  app.use('/api/session', sessionRouter.router);
   return app;
 }
 
@@ -29,6 +31,7 @@ beforeAll(async () => {
   });
   await testDataSource.initialize();
   setDataSource(testDataSource);
+  sessionRepository = new SessionRepository();
 });
 
 afterAll(async () => {
@@ -41,7 +44,7 @@ describe('Session Routes', () => {
   let app: express.Express;
 
   beforeEach(async () => {
-    await clearAllSessions();
+    await sessionRepository.clear();
     app = createApp();
   });
 
@@ -83,7 +86,6 @@ describe('Session Routes', () => {
       const agent = request.agent(app);
       await agent.post('/api/session');
 
-      // Roll multiple times — credits should decrease by 1 each non-winning roll
       let lastCredits = 10;
       for (let i = 0; i < 5; i++) {
         const rollRes = await agent.post('/api/session/roll');
@@ -100,12 +102,11 @@ describe('Session Routes', () => {
       expect(res.body.error).toBeDefined();
     });
 
-    it('should return 400 when session is closed', async () => {
+    it('should return 404 after cashout', async () => {
       const agent = request.agent(app);
       await agent.post('/api/session');
       await agent.post('/api/session/cashout');
 
-      // After cashout, session is destroyed, so this should be 404
       const rollRes = await agent.post('/api/session/roll');
       expect(rollRes.status).toBe(404);
     });
@@ -114,13 +115,11 @@ describe('Session Routes', () => {
       const agent = request.agent(app);
       await agent.post('/api/session');
 
-      // Drain all credits by rolling
       let status = 200;
       for (let i = 0; i < 20 && status === 200; i++) {
         const res = await agent.post('/api/session/roll');
         status = res.status;
         if (res.body.credits === 0 && status === 200) {
-          // Next roll should fail
           const nextRes = await agent.post('/api/session/roll');
           expect(nextRes.status).toBe(400);
           expect(nextRes.body.error).toContain('credits');
@@ -148,8 +147,7 @@ describe('Session Routes', () => {
 
       await agent.post('/api/session/cashout');
 
-      // Verify session was persisted to SQLite
-      const persistedSession = await getPersistedSession(sessionId);
+      const persistedSession = await sessionRepository.findById(sessionId);
       expect(persistedSession).not.toBeNull();
       expect(persistedSession!.playerId).toBe('persist-test');
       expect(persistedSession!.credits).toBe(10);
@@ -166,7 +164,6 @@ describe('Session Routes', () => {
       await agent.post('/api/session');
 
       await agent.post('/api/session/cashout');
-      // After cashout, session is destroyed
       const res = await agent.post('/api/session/cashout');
       expect(res.status).toBe(404);
     });

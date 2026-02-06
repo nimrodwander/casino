@@ -3,7 +3,7 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import { initializeDatabase } from './database.js';
-import { sessionMiddleware } from './sessionConfig.js';
+import { sessionMiddleware } from './config/session.js';
 import sessionRouter from './routes/session.js';
 
 const app = express();

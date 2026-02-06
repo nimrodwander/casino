@@ -5,7 +5,10 @@ class ApiService {
   private client: AxiosInstance;
 
   constructor() {
-    this.client = axios.create({ baseURL: '/api/session' });
+    this.client = axios.create({
+      baseURL: '/api/session',
+      withCredentials: true, // Required for cookie-based sessions
+    });
   }
 
   async createSession(playerId: string): Promise<CreateSessionResponse> {
@@ -13,13 +16,13 @@ class ApiService {
     return data;
   }
 
-  async roll(sessionId: string): Promise<RollResponse> {
-    const { data } = await this.client.post<RollResponse>(`/${sessionId}/roll`);
+  async roll(): Promise<RollResponse> {
+    const { data } = await this.client.post<RollResponse>('/roll');
     return data;
   }
 
-  async cashOut(sessionId: string): Promise<CashOutResponse> {
-    const { data } = await this.client.post<CashOutResponse>(`/${sessionId}/cashout`);
+  async cashOut(): Promise<CashOutResponse> {
+    const { data } = await this.client.post<CashOutResponse>('/cashout');
     return data;
   }
 }

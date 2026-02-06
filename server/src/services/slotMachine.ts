@@ -15,57 +15,59 @@ export interface RollResult {
   reward: number;
 }
 
-function randomSymbol(): SlotSymbol {
-  const index = Math.floor(Math.random() * ALL_SYMBOLS.length);
-  return ALL_SYMBOLS[index];
-}
-
-export function generateRoll(): SymbolTriplet {
-  return [randomSymbol(), randomSymbol(), randomSymbol()];
-}
-
-export function isWin(symbols: SymbolTriplet): boolean {
-  return symbols[0] === symbols[1] && symbols[1] === symbols[2];
-}
-
-export function getReward(symbol: SlotSymbol): number {
-  return SYMBOL_REWARDS[symbol];
-}
-
-function getCheatChance(credits: number): number {
-  if (credits > CHEAT_THRESHOLD_HIGH) {
-    return CHEAT_CHANCE_HIGH;
+export class SlotMachine {
+  private randomSymbol(): SlotSymbol {
+    const index = Math.floor(Math.random() * ALL_SYMBOLS.length);
+    return ALL_SYMBOLS[index];
   }
-  if (credits >= CHEAT_THRESHOLD_LOW) {
-    return CHEAT_CHANCE_LOW;
+
+  generateRoll(): SymbolTriplet {
+    return [this.randomSymbol(), this.randomSymbol(), this.randomSymbol()];
   }
-  return 0;
-}
 
-function evaluateRoll(symbols: SymbolTriplet): RollResult {
-  const win = isWin(symbols);
-  const reward = win ? getReward(symbols[0]) : 0;
-  return { symbols, win, reward };
-}
+  isWin(symbols: SymbolTriplet): boolean {
+    return symbols[0] === symbols[1] && symbols[1] === symbols[2];
+  }
 
-export function rollWithCheat(currentCredits: number): RollResult {
-  const symbols = generateRoll();
-  const result = evaluateRoll(symbols);
+  getReward(symbol: SlotSymbol): number {
+    return SYMBOL_REWARDS[symbol];
+  }
 
-  if (!result.win) {
+  private getCheatChance(credits: number): number {
+    if (credits > CHEAT_THRESHOLD_HIGH) {
+      return CHEAT_CHANCE_HIGH;
+    }
+    if (credits >= CHEAT_THRESHOLD_LOW) {
+      return CHEAT_CHANCE_LOW;
+    }
+    return 0;
+  }
+
+  private evaluateRoll(symbols: SymbolTriplet): RollResult {
+    const win = this.isWin(symbols);
+    const reward = win ? this.getReward(symbols[0]) : 0;
+    return { symbols, win, reward };
+  }
+
+  roll(currentCredits: number): RollResult {
+    const symbols = this.generateRoll();
+    const result = this.evaluateRoll(symbols);
+
+    if (!result.win) {
+      return result;
+    }
+
+    const cheatChance = this.getCheatChance(currentCredits);
+    if (cheatChance === 0) {
+      return result;
+    }
+
+    // Decide whether to re-roll (house always wins!)
+    if (Math.random() < cheatChance) {
+      const rerolledSymbols = this.generateRoll();
+      return this.evaluateRoll(rerolledSymbols);
+    }
+
     return result;
   }
-
-  const cheatChance = getCheatChance(currentCredits);
-  if (cheatChance === 0) {
-    return result;
-  }
-
-  // Decide whether to re-roll
-  if (Math.random() < cheatChance) {
-    const rerolledSymbols = generateRoll();
-    return evaluateRoll(rerolledSymbols);
-  }
-
-  return result;
 }
