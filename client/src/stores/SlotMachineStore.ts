@@ -4,6 +4,7 @@ import { apiService } from '../services/api.service';
 
 export class SlotMachineStore {
   public sessionId: string | null = null;
+  public playerId: string | null = null;
   public credits = 0;
   public symbols: SymbolTriplet | null = null;
   public lastRoll: RollResponse | null = null;
@@ -12,11 +13,12 @@ export class SlotMachineStore {
     makeAutoObservable(this);
   }
 
-  public async startGame(): Promise<void> {
-    const { sessionId, credits } = await apiService.createSession();
+  public async startGame(playerId: string): Promise<void> {
+    const { sessionId, credits, playerId: returnedPlayerId } = await apiService.createSession(playerId);
     runInAction(() => {
       this.reset();
       this.sessionId = sessionId;
+      this.playerId = returnedPlayerId;
       this.credits = credits;
     });
   }
@@ -45,6 +47,7 @@ export class SlotMachineStore {
 
   public reset(): void {
     this.sessionId = null;
+    this.playerId = null;
     this.credits = 0;
     this.symbols = null;
     this.lastRoll = null;

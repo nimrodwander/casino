@@ -8,8 +8,8 @@ class ApiService {
     this.client = axios.create({ baseURL: '/api/session' });
   }
 
-  async createSession(): Promise<CreateSessionResponse> {
-    const { data } = await this.client.post<CreateSessionResponse>('');
+  async createSession(playerId: string): Promise<CreateSessionResponse> {
+    const { data } = await this.client.post<CreateSessionResponse>('', { playerId });
     return data;
   }
 

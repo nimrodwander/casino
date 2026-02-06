@@ -21,10 +21,11 @@ describe('Session Routes', () => {
 
   describe('POST /api/session', () => {
     it('should create a new session with 10 credits', async () => {
-      const res = await request(app).post('/api/session');
+      const res = await request(app).post('/api/session').send({ playerId: 'test-player' });
       expect(res.status).toBe(201);
       expect(res.body.sessionId).toBeDefined();
       expect(res.body.credits).toBe(10);
+      expect(res.body.playerId).toBe('test-player');
     });
   });
 

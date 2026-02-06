@@ -12,11 +12,13 @@ import { rollWithCheat } from '../services/slotMachine.js';
 const router = Router();
 
 // POST /api/session — create a new game session
-router.post('/', (_req, res) => {
-  const session = createSession();
+router.post('/', (req, res) => {
+  const { playerId } = req.body as { playerId?: string };
+  const session = createSession(playerId ?? '');
   const response: CreateSessionResponse = {
     sessionId: session.id,
     credits: session.credits,
+    playerId: session.playerId,
   };
   res.status(201).json(response);
 });

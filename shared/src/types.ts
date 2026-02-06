@@ -27,10 +27,16 @@ export const CHEAT_THRESHOLD_HIGH = 60;
 export const CHEAT_CHANCE_LOW = 0.3;
 export const CHEAT_CHANCE_HIGH = 0.6;
 
+// API request types
+export interface CreateSessionRequest {
+  playerId: string;
+}
+
 // API response types
 export interface CreateSessionResponse {
   sessionId: string;
   credits: number;
+  playerId: string;
 }
 
 export interface RollResponse {

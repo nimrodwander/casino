@@ -3,15 +3,17 @@ import { INITIAL_CREDITS } from '@casino/shared';
 
 export interface Session {
   id: string;
+  playerId: string;
   credits: number;
   active: boolean;
 }
 
 const sessions = new Map<string, Session>();
 
-export function createSession(): Session {
+export function createSession(playerId: string): Session {
   const session: Session = {
     id: uuidv4(),
+    playerId,
     credits: INITIAL_CREDITS,
     active: true,
   };
