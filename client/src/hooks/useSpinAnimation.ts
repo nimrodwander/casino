@@ -1,22 +1,28 @@
 import { useState, useEffect } from 'react';
 
-const SPIN_CHARS = ['X', '*', '#', '+'];
-const SPIN_INTERVAL_MS = 100;
+interface UseSpinAnimationOptions {
+  spinChars?: string[];
+  spinIntervalMs?: number;
+}
 
-export function useSpinAnimation(active: boolean): string {
-  const [spinChar, setSpinChar] = useState(SPIN_CHARS[0]);
+export function useSpinAnimation(
+  active: boolean,
+  options: UseSpinAnimationOptions = {}
+): string {
+  const { spinChars = ['X'], spinIntervalMs = 100 } = options;
+  const [spinChar, setSpinChar] = useState(spinChars[0]);
 
   useEffect(() => {
     if (!active) return;
 
     let index = 0;
     const interval = setInterval(() => {
-      index = (index + 1) % SPIN_CHARS.length;
-      setSpinChar(SPIN_CHARS[index]);
-    }, SPIN_INTERVAL_MS);
+      index = (index + 1) % spinChars.length;
+      setSpinChar(spinChars[index]);
+    }, spinIntervalMs);
 
     return () => clearInterval(interval);
-  }, [active]);
+  }, [active, spinChars, spinIntervalMs]);
 
   return spinChar;
 }

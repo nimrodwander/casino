@@ -11,7 +11,7 @@ interface ReelProps {
 }
 
 export const Reel: React.FC<ReelProps> = ({ symbol, revealed, spinning }) => {
-  const spinChar = useSpinAnimation(spinning && !revealed);
+  const spinChar = useSpinAnimation(spinning && !revealed, { spinChars: ['C', 'L', 'O', 'W'] });
   const displayChar = revealed && symbol ? symbol : spinning ? spinChar : '-';
   const title = revealed && symbol ? SYMBOL_NAMES[symbol] : undefined;
 

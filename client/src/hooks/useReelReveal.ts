@@ -1,10 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 
-const REVEAL_INTERVAL_MS = 1000;
-
 type OnComplete<T> = (items: T[]) => void;
 
-export function useReelReveal<T>() {
+export function useReelReveal<T>(revealIntervalMs: number = 1000) {
   const INITIAL_STATE = { revealedCount: 0, spinning: false };
   const [state, setState] = useState(INITIAL_STATE);
   const itemsRef = useRef<T[]>([]);
@@ -15,7 +13,7 @@ export function useReelReveal<T>() {
       const done = revealed >= total;
       setState({ revealedCount: revealed, spinning: !done });
       if (done) onCompleteRef.current?.(itemsRef.current);
-    }, revealed * REVEAL_INTERVAL_MS);
+    }, revealed * revealIntervalMs);
 
   useEffect(() => {
     if (!state.spinning) return;
