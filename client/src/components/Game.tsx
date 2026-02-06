@@ -1,16 +1,17 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import { runInAction } from 'mobx';
-import { Box, Button, Stack, TextField } from '@mui/material';
+import { Box, Button, Stack } from '@mui/material';
 import { Reel } from './Reel';
-
 import { CashOutButton } from './CashOutButton';
 import type { SlotSymbol } from '@casino/shared';
 import { slotMachineStore } from '../stores/SlotMachineStore';
 import { useReelReveal } from '../hooks/useReelReveal';
 
-export const SlotMachine: React.FC = observer(() => {
+export const Game: React.FC = observer(() => {
   const store = slotMachineStore;
+  const navigate = useNavigate();
   const { revealedCount, spinning, startReveal, resetReveal } = useReelReveal<SlotSymbol>();
 
   const handleRoll = async () => {
@@ -24,24 +25,15 @@ export const SlotMachine: React.FC = observer(() => {
   const handleReset = () => {
     resetReveal();
     store.reset();
+    navigate('/');
   };
 
-  if (!store.sessionId) {
-    return (
-      <Box sx={{ textAlign: 'center' }}>
-        <TextField
-          placeholder="Enter your ID"
-          variant="outlined"
-          fullWidth
-          sx={{ mb: 3, maxWidth: 400, mx: 'auto', backgroundColor: 'background.paper', borderRadius: 1, '& .MuiOutlinedInput-notchedOutline': { border: 'none' } }}
-          slotProps={{ input: { style: { fontSize: '1.5rem', textAlign: 'center' } } }}
-        />
-        <Button variant="contained" size="large" onClick={() => store.startGame()}>
-          Start Game
-        </Button>
-      </Box>
-    );
-  }
+  const handleCashOut = async () => {
+    await store.cashOut();
+    resetReveal();
+    store.reset();
+    navigate('/');
+  };
 
   return (
     <Box sx={{ textAlign: 'center' }}>
@@ -56,7 +48,6 @@ export const SlotMachine: React.FC = observer(() => {
         ))}
       </Stack>
 
-
       <Stack direction="row" spacing={2} justifyContent="center" sx={{ mb: 3 }}>
         {store.gameOver ? (
           <Button variant="contained" size="large" onClick={handleReset}>
@@ -69,17 +60,16 @@ export const SlotMachine: React.FC = observer(() => {
               size="large"
               onClick={handleRoll}
               disabled={spinning || store.credits <= 0}
-              >
+            >
               {spinning ? 'Rolling...' : 'Roll'}
             </Button>
             <CashOutButton
-              onCashOut={() => store.cashOut()}
+              onCashOut={handleCashOut}
               disabled={spinning}
-              />
+            />
           </>
         )}
       </Stack>
-
     </Box>
   );
 });
