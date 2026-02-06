@@ -14,16 +14,12 @@ export class SlotMachineStore {
   }
 
   async startGame(): Promise<void> {
-    try {
-      const { sessionId, credits } = await apiService.createSession();
-      runInAction(() => {
-        this.reset();
-        this.sessionId = sessionId;
-        this.credits = credits;
-      });
-    } catch {
-      // start game failed
-    }
+    const { sessionId, credits } = await apiService.createSession();
+    runInAction(() => {
+      this.reset();
+      this.sessionId = sessionId;
+      this.credits = credits;
+    });
   }
 
   async roll(): Promise<RollResponse | null> {
@@ -31,16 +27,12 @@ export class SlotMachineStore {
 
     this.symbols = null;
 
-    try {
-      const result = await apiService.roll(this.sessionId);
-      runInAction(() => {
-        this.lastRoll = result;
-        this.symbols = result.symbols;
-      });
-      return result;
-    } catch {
-      return null;
-    }
+    const result = await apiService.roll(this.sessionId);
+    runInAction(() => {
+      this.lastRoll = result;
+      this.symbols = result.symbols;
+    });
+    return result;
   }
 
   applyRollResult(result: RollResponse): void {
@@ -51,14 +43,10 @@ export class SlotMachineStore {
   async cashOut(): Promise<void> {
     if (!this.sessionId) return;
 
-    try {
-      await apiService.cashOut(this.sessionId);
-      runInAction(() => {
-        this.gameOver = true;
-      });
-    } catch {
-      // cash out failed
-    }
+    await apiService.cashOut(this.sessionId);
+    runInAction(() => {
+      this.gameOver = true;
+    });
   }
 
   reset(): void {
