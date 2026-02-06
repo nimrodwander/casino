@@ -23,12 +23,6 @@ export const Game: React.FC = observer(() => {
     }
   };
 
-  const handleReset = () => {
-    resetReveal();
-    store.reset();
-    navigate('/');
-  };
-
   const handleCashOut = async () => {
     await store.cashOut();
     resetReveal();
@@ -46,26 +40,18 @@ export const Game: React.FC = observer(() => {
         />
 
       <Stack direction="row" spacing={2} justifyContent="center" sx={{ mb: 3 }}>
-        {store.gameOver ? (
-          <Button variant="contained" size="large" onClick={handleReset}>
-            New Game
+          <Button
+            variant="contained"
+            size="large"
+            onClick={handleRoll}
+            disabled={spinning || store.credits <= 0}
+          >
+            {spinning ? 'Rolling...' : 'Roll'}
           </Button>
-        ) : (
-          <>
-            <Button
-              variant="contained"
-              size="large"
-              onClick={handleRoll}
-              disabled={spinning || store.credits <= 0}
-            >
-              {spinning ? 'Rolling...' : 'Roll'}
-            </Button>
-            <CashOutButton
-              onCashOut={handleCashOut}
-              disabled={spinning}
-            />
-          </>
-        )}
+          <CashOutButton
+            onCashOut={handleCashOut}
+            disabled={spinning}
+          />
       </Stack>
     </Box>
   );
