@@ -1,59 +1,38 @@
-import { v4 as uuidv4 } from 'uuid';
-import { INITIAL_CREDITS } from '@casino/shared';
 import { getSessionRepository } from '../database.js';
 import { Session } from '../entities/Session.js';
 
 export type { Session };
 
-export async function createSession(playerId: string): Promise<Session> {
+// Persist session data to SQLite on cashout
+export async function persistSession(
+  sessionId: string,
+  playerId: string,
+  credits: number
+): Promise<Session> {
   const repo = getSessionRepository();
   const session = repo.create({
-    id: uuidv4(),
+    id: sessionId,
     playerId,
-    credits: INITIAL_CREDITS,
-    active: true,
+    credits,
+    active: false, // Session is closed when cashed out
   });
   await repo.save(session);
   return session;
 }
 
-export async function getSession(id: string): Promise<Session | null> {
+// Get a persisted session from the database
+export async function getPersistedSession(id: string): Promise<Session | null> {
   const repo = getSessionRepository();
   return repo.findOneBy({ id });
 }
 
-export async function updateCredits(id: string, delta: number): Promise<Session> {
+// Get all persisted sessions for a player
+export async function getPlayerSessions(playerId: string): Promise<Session[]> {
   const repo = getSessionRepository();
-  const session = await repo.findOneBy({ id });
-
-  if (!session) {
-    throw new Error(`Session ${id} not found`);
-  }
-  if (!session.active) {
-    throw new Error(`Session ${id} is closed`);
-  }
-
-  session.credits += delta;
-  await repo.save(session);
-  return session;
+  return repo.findBy({ playerId });
 }
 
-export async function closeSession(id: string): Promise<Session> {
-  const repo = getSessionRepository();
-  const session = await repo.findOneBy({ id });
-
-  if (!session) {
-    throw new Error(`Session ${id} not found`);
-  }
-  if (!session.active) {
-    throw new Error(`Session ${id} is already closed`);
-  }
-
-  session.active = false;
-  await repo.save(session);
-  return session;
-}
-
+// Clear all sessions (for testing)
 export async function clearAllSessions(): Promise<void> {
   const repo = getSessionRepository();
   await repo.clear();

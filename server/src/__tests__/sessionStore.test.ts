@@ -4,13 +4,11 @@ import { DataSource } from 'typeorm';
 import { Session } from '../entities/Session.js';
 import { setDataSource } from '../database.js';
 import {
-  createSession,
-  getSession,
-  updateCredits,
-  closeSession,
+  persistSession,
+  getPersistedSession,
+  getPlayerSessions,
   clearAllSessions,
 } from '../services/sessionStore.js';
-import { INITIAL_CREDITS } from '@casino/shared';
 
 let testDataSource: DataSource;
 
@@ -37,81 +35,66 @@ describe('SessionStore', () => {
     await clearAllSessions();
   });
 
-  describe('createSession', () => {
-    it('should create a session with a UUID and initial credits', async () => {
-      const session = await createSession('test-player');
-      expect(session.id).toBeDefined();
-      expect(session.id).toMatch(
-        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
-      );
-      expect(session.credits).toBe(INITIAL_CREDITS);
-      expect(session.active).toBe(true);
+  describe('persistSession', () => {
+    it('should persist a session with given data', async () => {
+      const session = await persistSession('session-123', 'player-1', 50);
+      expect(session.id).toBe('session-123');
+      expect(session.playerId).toBe('player-1');
+      expect(session.credits).toBe(50);
+      expect(session.active).toBe(false);
     });
 
-    it('should store the playerId', async () => {
-      const session = await createSession('my-player-id');
-      expect(session.playerId).toBe('my-player-id');
-    });
-
-    it('should create unique sessions', async () => {
-      const session1 = await createSession('test-player');
-      const session2 = await createSession('test-player');
-      expect(session1.id).not.toBe(session2.id);
+    it('should store the session in the database', async () => {
+      await persistSession('session-456', 'player-2', 100);
+      const fetched = await getPersistedSession('session-456');
+      expect(fetched).not.toBeNull();
+      expect(fetched!.playerId).toBe('player-2');
+      expect(fetched!.credits).toBe(100);
     });
   });
 
-  describe('getSession', () => {
+  describe('getPersistedSession', () => {
     it('should return the session by id', async () => {
-      const created = await createSession('test-player');
-      const fetched = await getSession(created.id);
-      expect(fetched).toEqual(created);
+      await persistSession('session-789', 'player-3', 25);
+      const fetched = await getPersistedSession('session-789');
+      expect(fetched).not.toBeNull();
+      expect(fetched!.id).toBe('session-789');
     });
 
     it('should return null for nonexistent id', async () => {
-      const fetched = await getSession('nonexistent');
+      const fetched = await getPersistedSession('nonexistent');
       expect(fetched).toBeNull();
     });
   });
 
-  describe('updateCredits', () => {
-    it('should add credits', async () => {
-      const session = await createSession('test-player');
-      const updated = await updateCredits(session.id, 20);
-      expect(updated.credits).toBe(INITIAL_CREDITS + 20);
+  describe('getPlayerSessions', () => {
+    it('should return all sessions for a player', async () => {
+      await persistSession('session-1', 'player-x', 10);
+      await persistSession('session-2', 'player-x', 20);
+      await persistSession('session-3', 'player-y', 30);
+
+      const playerXSessions = await getPlayerSessions('player-x');
+      expect(playerXSessions).toHaveLength(2);
+      expect(playerXSessions.map((s) => s.credits).sort()).toEqual([10, 20]);
     });
 
-    it('should subtract credits', async () => {
-      const session = await createSession('test-player');
-      const updated = await updateCredits(session.id, -1);
-      expect(updated.credits).toBe(INITIAL_CREDITS - 1);
-    });
-
-    it('should throw for nonexistent session', async () => {
-      await expect(updateCredits('nonexistent', 10)).rejects.toThrow('not found');
-    });
-
-    it('should throw for closed session', async () => {
-      const session = await createSession('test-player');
-      await closeSession(session.id);
-      await expect(updateCredits(session.id, 10)).rejects.toThrow('closed');
+    it('should return empty array for player with no sessions', async () => {
+      const sessions = await getPlayerSessions('no-sessions-player');
+      expect(sessions).toEqual([]);
     });
   });
 
-  describe('closeSession', () => {
-    it('should mark session as inactive', async () => {
-      const session = await createSession('test-player');
-      const closed = await closeSession(session.id);
-      expect(closed.active).toBe(false);
-    });
+  describe('clearAllSessions', () => {
+    it('should remove all sessions', async () => {
+      await persistSession('session-a', 'player-1', 10);
+      await persistSession('session-b', 'player-2', 20);
 
-    it('should throw for nonexistent session', async () => {
-      await expect(closeSession('nonexistent')).rejects.toThrow('not found');
-    });
+      await clearAllSessions();
 
-    it('should throw if session already closed', async () => {
-      const session = await createSession('test-player');
-      await closeSession(session.id);
-      await expect(closeSession(session.id)).rejects.toThrow('already closed');
+      const session1 = await getPersistedSession('session-a');
+      const session2 = await getPersistedSession('session-b');
+      expect(session1).toBeNull();
+      expect(session2).toBeNull();
     });
   });
 });

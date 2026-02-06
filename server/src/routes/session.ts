@@ -6,88 +6,112 @@ import type {
   ErrorResponse,
 } from '@casino/shared';
 import { ROLL_COST } from '@casino/shared';
-import { createSession, getSession, updateCredits, closeSession } from '../services/sessionStore.js';
+import {
+  createGameSession,
+  getGameSession,
+  updateGameCredits,
+  closeGameSession,
+} from '../sessionConfig.js';
 import { rollWithCheat } from '../services/slotMachine.js';
+import { persistSession } from '../services/sessionStore.js';
 
 const router = Router();
 
 // POST /api/session — create a new game session
-router.post('/', async (req, res) => {
+router.post('/', (req, res) => {
   const { playerId } = req.body as { playerId?: string };
-  const session = await createSession(playerId ?? '');
+
+  // Check if session already has an active game
+  if (req.session.gameSession?.active) {
+    const error: ErrorResponse = { error: 'Session already has an active game' };
+    res.status(400).json(error);
+    return;
+  }
+
+  createGameSession(req.session, playerId ?? '');
+
+  const gameSession = getGameSession(req.session)!;
   const response: CreateSessionResponse = {
-    sessionId: session.id,
-    credits: session.credits,
-    playerId: session.playerId,
+    sessionId: req.session.id,
+    credits: gameSession.credits,
+    playerId: gameSession.playerId,
   };
   res.status(201).json(response);
 });
 
-// POST /api/session/:id/roll — roll the slot machine
-router.post('/:id/roll', async (req, res) => {
-  const { id } = req.params;
-  const session = await getSession(id);
+// POST /api/session/roll — roll the slot machine
+router.post('/roll', (req, res) => {
+  const gameSession = getGameSession(req.session);
 
-  if (!session) {
-    const error: ErrorResponse = { error: 'Session not found' };
+  if (!gameSession) {
+    const error: ErrorResponse = { error: 'No active game session. Create a session first.' };
     res.status(404).json(error);
     return;
   }
 
-  if (!session.active) {
+  if (!gameSession.active) {
     const error: ErrorResponse = { error: 'Session is closed' };
     res.status(400).json(error);
     return;
   }
 
-  if (session.credits < ROLL_COST) {
+  if (gameSession.credits < ROLL_COST) {
     const error: ErrorResponse = { error: 'Not enough credits' };
     res.status(400).json(error);
     return;
   }
 
   // Deduct roll cost
-  await updateCredits(id, -ROLL_COST);
+  updateGameCredits(req.session, -ROLL_COST);
 
   // Perform roll with potential cheat
-  const result = rollWithCheat(session.credits);
+  const result = rollWithCheat(gameSession.credits);
 
   // Add reward if won
   if (result.win) {
-    await updateCredits(id, result.reward);
+    updateGameCredits(req.session, result.reward);
   }
 
-  // Fetch updated session to get current credits
-  const updatedSession = await getSession(id);
-
+  const updatedSession = getGameSession(req.session)!;
   const response: RollResponse = {
     symbols: result.symbols,
     win: result.win,
     reward: result.reward,
-    credits: updatedSession!.credits,
+    credits: updatedSession.credits,
   };
   res.json(response);
 });
 
-// POST /api/session/:id/cashout — cash out and close session
-router.post('/:id/cashout', async (req, res) => {
-  const { id } = req.params;
-  const session = await getSession(id);
+// POST /api/session/cashout — cash out and close session
+router.post('/cashout', async (req, res) => {
+  const gameSession = getGameSession(req.session);
 
-  if (!session) {
-    const error: ErrorResponse = { error: 'Session not found' };
+  if (!gameSession) {
+    const error: ErrorResponse = { error: 'No active game session' };
     res.status(404).json(error);
     return;
   }
 
-  if (!session.active) {
+  if (!gameSession.active) {
     const error: ErrorResponse = { error: 'Session is already closed' };
     res.status(400).json(error);
     return;
   }
 
-  const finalCredits = session.credits;
-  await closeSession(id);
+  const finalCredits = gameSession.credits;
+
+  // Persist to SQLite database
+  await persistSession(req.session.id, gameSession.playerId, finalCredits);
+
+  // Close the game session
+  closeGameSession(req.session);
+
+  // Destroy the express session
+  req.session.destroy((err) => {
+    if (err) {
+      console.error('Error destroying session:', err);
+    }
+  });
 
   const response: CashOutResponse = {
     credits: finalCredits,
