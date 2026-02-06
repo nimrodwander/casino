@@ -7,8 +7,7 @@ export class GameSession {
   constructor(
     public readonly id: string,
     public readonly playerId: string,
-    private _credits: number = INITIAL_CREDITS,
-    private _active: boolean = true
+    private _credits: number = INITIAL_CREDITS
   ) {
     this.slotMachine = new SlotMachine();
   }
@@ -17,18 +16,11 @@ export class GameSession {
     return this._credits;
   }
 
-  get active(): boolean {
-    return this._active;
-  }
-
   canRoll(): boolean {
-    return this._active && this._credits >= ROLL_COST;
+    return this._credits >= ROLL_COST;
   }
 
   roll(): RollResult {
-    if (!this._active) {
-      throw new Error('Session is closed');
-    }
     if (this._credits < ROLL_COST) {
       throw new Error('Not enough credits');
     }
@@ -48,19 +40,6 @@ export class GameSession {
   }
 
   cashOut(): number {
-    if (!this._active) {
-      throw new Error('Session is already closed');
-    }
-    this._active = false;
     return this._credits;
-  }
-
-  toJSON() {
-    return {
-      id: this.id,
-      playerId: this.playerId,
-      credits: this._credits,
-      active: this._active,
-    };
   }
 }

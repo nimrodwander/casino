@@ -32,8 +32,7 @@ export class SessionRouter {
     return new GameSession(
       req.session.id,
       sessionData.playerId,
-      sessionData.credits,
-      sessionData.active
+      sessionData.credits
     );
   }
 
@@ -41,16 +40,20 @@ export class SessionRouter {
     req.session.gameSession = {
       playerId: gameSession.playerId,
       credits: gameSession.credits,
-      active: gameSession.active,
     };
   }
 
   private createSession(req: Request, res: Response): void {
     const { playerId } = req.body as { playerId?: string };
 
-    if (req.session.gameSession?.active) {
-      const error: ErrorResponse = { error: 'Session already has an active game' };
-      res.status(400).json(error);
+    // If session already exists, return it instead of error
+    if (req.session.gameSession) {
+      const response: CreateSessionResponse = {
+        sessionId: req.session.id,
+        credits: req.session.gameSession.credits,
+        playerId: req.session.gameSession.playerId,
+      };
+      res.status(200).json(response);
       return;
     }
 
@@ -71,12 +74,6 @@ export class SessionRouter {
     if (!gameSession) {
       const error: ErrorResponse = { error: 'No active game session. Create a session first.' };
       res.status(404).json(error);
-      return;
-    }
-
-    if (!gameSession.active) {
-      const error: ErrorResponse = { error: 'Session is closed' };
-      res.status(400).json(error);
       return;
     }
 
@@ -104,12 +101,6 @@ export class SessionRouter {
     if (!gameSession) {
       const error: ErrorResponse = { error: 'No active game session' };
       res.status(404).json(error);
-      return;
-    }
-
-    if (!gameSession.active) {
-      const error: ErrorResponse = { error: 'Session is already closed' };
-      res.status(400).json(error);
       return;
     }
 

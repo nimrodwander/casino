@@ -28,7 +28,7 @@ export class SlotMachineStore {
 
     this.symbols = null;
 
-    const result = await apiService.roll(this.sessionId);
+    const result = await apiService.roll();
     runInAction(() => {
       this.lastRoll = result;
       this.symbols = result.symbols;
@@ -42,7 +42,7 @@ export class SlotMachineStore {
 
   public async cashOut(): Promise<void> {
     if (!this.sessionId) return;
-    await apiService.cashOut(this.sessionId);
+    await apiService.cashOut();
   }
 
   public reset(): void {

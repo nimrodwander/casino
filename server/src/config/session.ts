@@ -6,7 +6,6 @@ declare module 'express-session' {
     gameSession: {
       playerId: string;
       credits: number;
-      active: boolean;
     };
   }
 }

@@ -57,15 +57,16 @@ describe('Session Routes', () => {
       expect(res.body.playerId).toBe('test-player');
     });
 
-    it('should not allow creating a second session while one is active', async () => {
+    it('should return existing session if one already exists', async () => {
       const agent = request.agent(app);
 
       const res1 = await agent.post('/api/session').send({ playerId: 'test-player' });
       expect(res1.status).toBe(201);
 
       const res2 = await agent.post('/api/session').send({ playerId: 'test-player' });
-      expect(res2.status).toBe(400);
-      expect(res2.body.error).toContain('already has an active game');
+      expect(res2.status).toBe(200);
+      expect(res2.body.sessionId).toBe(res1.body.sessionId);
+      expect(res2.body.credits).toBe(res1.body.credits);
     });
   });
 
@@ -151,7 +152,6 @@ describe('Session Routes', () => {
       expect(persistedSession).not.toBeNull();
       expect(persistedSession!.playerId).toBe('persist-test');
       expect(persistedSession!.credits).toBe(10);
-      expect(persistedSession!.active).toBe(false);
     });
 
     it('should return 404 when no session exists', async () => {
