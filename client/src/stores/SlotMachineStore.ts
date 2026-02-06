@@ -3,17 +3,17 @@ import type { SymbolTriplet, RollResponse } from '@casino/shared';
 import { apiService } from '../services/api.service';
 
 export class SlotMachineStore {
-  sessionId: string | null = null;
-  credits = 0;
-  symbols: SymbolTriplet | null = null;
-  lastRoll: RollResponse | null = null;
-  gameOver = false;
+  public sessionId: string | null = null;
+  public credits = 0;
+  public symbols: SymbolTriplet | null = null;
+  public lastRoll: RollResponse | null = null;
+  public gameOver = false;
 
-  constructor() {
+  public constructor() {
     makeAutoObservable(this);
   }
 
-  async startGame(): Promise<void> {
+  public async startGame(): Promise<void> {
     const { sessionId, credits } = await apiService.createSession();
     runInAction(() => {
       this.reset();
@@ -22,7 +22,7 @@ export class SlotMachineStore {
     });
   }
 
-  async roll(): Promise<RollResponse | null> {
+  public async roll(): Promise<RollResponse | null> {
     if (!this.sessionId || this.gameOver) return null;
 
     this.symbols = null;
@@ -35,12 +35,12 @@ export class SlotMachineStore {
     return result;
   }
 
-  applyRollResult(result: RollResponse): void {
+  public applyRollResult(result: RollResponse): void {
     this.credits = result.credits;
     this.gameOver = result.credits <= 0;
   }
 
-  async cashOut(): Promise<void> {
+  public async cashOut(): Promise<void> {
     if (!this.sessionId) return;
 
     await apiService.cashOut(this.sessionId);
@@ -49,7 +49,7 @@ export class SlotMachineStore {
     });
   }
 
-  reset(): void {
+  public reset(): void {
     this.sessionId = null;
     this.credits = 0;
     this.symbols = null;
