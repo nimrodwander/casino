@@ -1,10 +1,10 @@
-import 'reflect-metadata';
+import cors from 'cors';
 import 'dotenv/config';
 import express from 'express';
-import cors from 'cors';
-import { initializeDatabase } from './database.js';
-import { sessionMiddleware } from './config/session.js';
-import sessionRouter from './routes/session.js';
+import 'reflect-metadata';
+import { sessionMiddleware } from './config/session.config.js';
+import sessionRouter from './routers/session.router.js';
+import { initializeDatabase } from './services/database.service.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;

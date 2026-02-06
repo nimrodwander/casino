@@ -1,17 +1,17 @@
 import { Repository } from 'typeorm';
-import { Session } from '../entities/Session.js';
-import { getSessionRepository } from '../database.js';
+import { SessionEntity } from '../entities/Session.entity.js';
+import { getSessionRepository } from './database.service.js';
 
-export class SessionRepository {
-  private _repo: Repository<Session> | null = null;
+export class SessionRepositoryService {
+  private _repo: Repository<SessionEntity> | null = null;
 
-  constructor(repo?: Repository<Session>) {
+  constructor(repo?: Repository<SessionEntity>) {
     if (repo) {
       this._repo = repo;
     }
   }
 
-  private get repo(): Repository<Session> {
+  private get repo(): Repository<SessionEntity> {
     if (!this._repo) {
       this._repo = getSessionRepository();
     }
@@ -22,7 +22,7 @@ export class SessionRepository {
     sessionId: string,
     playerId: string,
     credits: number
-  ): Promise<Session> {
+  ): Promise<SessionEntity> {
     const session = this.repo.create({
       id: sessionId,
       playerId,
@@ -33,11 +33,11 @@ export class SessionRepository {
     return session;
   }
 
-  async findById(id: string): Promise<Session | null> {
+  async findById(id: string): Promise<SessionEntity | null> {
     return this.repo.findOneBy({ id });
   }
 
-  async findByPlayerId(playerId: string): Promise<Session[]> {
+  async findByPlayerId(playerId: string): Promise<SessionEntity[]> {
     return this.repo.findBy({ playerId });
   }
 

@@ -1,12 +1,12 @@
 import 'reflect-metadata';
-import { describe, it, expect, beforeAll, beforeEach, afterAll } from 'vitest';
 import { DataSource } from 'typeorm';
-import { Session } from '../entities/Session.js';
-import { setDataSource } from '../database.js';
-import { SessionRepository } from '../services/sessionRepository.js';
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { SessionEntity } from '../entities/Session.entity.js';
+import { setDataSource } from '../services/database.service.js';
+import { SessionRepositoryService } from '../services/sessionRepository.service.js';
 
 let testDataSource: DataSource;
-let sessionRepository: SessionRepository;
+let sessionRepository: SessionRepositoryService;
 
 beforeAll(async () => {
   testDataSource = new DataSource({
@@ -14,11 +14,11 @@ beforeAll(async () => {
     database: ':memory:',
     synchronize: true,
     logging: false,
-    entities: [Session],
+    entities: [SessionEntity],
   });
   await testDataSource.initialize();
   setDataSource(testDataSource);
-  sessionRepository = new SessionRepository();
+  sessionRepository = new SessionRepositoryService();
 });
 
 afterAll(async () => {
@@ -27,7 +27,7 @@ afterAll(async () => {
   }
 });
 
-describe('SessionRepository', () => {
+describe('SessionRepositoryService', () => {
   beforeEach(async () => {
     await sessionRepository.clear();
   });

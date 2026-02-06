@@ -1,15 +1,15 @@
 import { INITIAL_CREDITS, ROLL_COST } from '@casino/shared';
-import { SlotMachine, RollResult } from './slotMachine.js';
+import { SlotMachineService, RollResult } from './slotMachine.service.js';
 
-export class GameSession {
-  private slotMachine: SlotMachine;
+export class GameSessionService {
+  private slotMachine: SlotMachineService;
 
   constructor(
     public readonly id: string,
     public readonly playerId: string,
     private _credits: number = INITIAL_CREDITS
   ) {
-    this.slotMachine = new SlotMachine();
+    this.slotMachine = new SlotMachineService();
   }
 
   get credits(): number {

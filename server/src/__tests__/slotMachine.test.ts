@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { SlotMachine } from '../services/slotMachine.js';
+import { SlotMachineService } from '../services/slotMachine.service.js';
 import { ALL_SYMBOLS, SYMBOL_REWARDS } from '@casino/shared';
 
-describe('SlotMachine', () => {
-  let slotMachine: SlotMachine;
+describe('SlotMachineService', () => {
+  let slotMachine: SlotMachineService;
 
   beforeEach(() => {
-    slotMachine = new SlotMachine();
+    slotMachine = new SlotMachineService();
   });
 
   afterEach(() => {

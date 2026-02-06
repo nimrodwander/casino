@@ -5,16 +5,16 @@ import type {
   CashOutResponse,
   ErrorResponse,
 } from '@casino/shared';
-import { GameSession } from '../services/gameSession.js';
-import { SessionRepository } from '../services/sessionRepository.js';
+import { GameSessionService } from '../services/gameSession.service.js';
+import { SessionRepositoryService } from '../services/sessionRepository.service.js';
 
 export class SessionRouter {
   public router: Router;
-  private sessionRepository: SessionRepository;
+  private sessionRepository: SessionRepositoryService;
 
-  constructor(sessionRepository?: SessionRepository) {
+  constructor(sessionRepository?: SessionRepositoryService) {
     this.router = Router();
-    this.sessionRepository = sessionRepository || new SessionRepository();
+    this.sessionRepository = sessionRepository || new SessionRepositoryService();
     this.initializeRoutes();
   }
 
@@ -24,19 +24,19 @@ export class SessionRouter {
     this.router.post('/cashout', this.cashOut.bind(this));
   }
 
-  private getGameSession(req: Request): GameSession | null {
+  private getGameSession(req: Request): GameSessionService | null {
     const sessionData = req.session.gameSession;
     if (!sessionData) {
       return null;
     }
-    return new GameSession(
+    return new GameSessionService(
       req.session.id,
       sessionData.playerId,
       sessionData.credits
     );
   }
 
-  private saveGameSession(req: Request, gameSession: GameSession): void {
+  private saveGameSession(req: Request, gameSession: GameSessionService): void {
     req.session.gameSession = {
       playerId: gameSession.playerId,
       credits: gameSession.credits,
@@ -57,7 +57,7 @@ export class SessionRouter {
       return;
     }
 
-    const gameSession = new GameSession(req.session.id, playerId ?? '');
+    const gameSession = new GameSessionService(req.session.id, playerId ?? '');
     this.saveGameSession(req, gameSession);
 
     const response: CreateSessionResponse = {

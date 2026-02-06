@@ -15,7 +15,7 @@ export interface RollResult {
   reward: number;
 }
 
-export class SlotMachine {
+export class SlotMachineService {
   private randomSymbol(): SlotSymbol {
     const index = Math.floor(Math.random() * ALL_SYMBOLS.length);
     return ALL_SYMBOLS[index];

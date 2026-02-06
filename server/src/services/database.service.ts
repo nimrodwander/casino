@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
-import { Session } from './entities/Session.js';
+import { SessionEntity } from '../entities/Session.entity.js';
 
 let dataSource: DataSource | null = null;
 
@@ -9,7 +9,7 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_PATH || 'casino.db',
   synchronize: true,
   logging: false,
-  entities: [Session],
+  entities: [SessionEntity],
 });
 
 export async function initializeDatabase(customDataSource?: DataSource): Promise<DataSource> {
@@ -32,7 +32,7 @@ export function getSessionRepository() {
   if (!dataSource) {
     throw new Error('Database not initialized. Call initializeDatabase first.');
   }
-  return dataSource.getRepository(Session);
+  return dataSource.getRepository(SessionEntity);
 }
 
 export function getDataSource(): DataSource | null {

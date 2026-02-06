@@ -1,16 +1,16 @@
-import 'reflect-metadata';
-import { describe, it, expect, beforeAll, beforeEach, afterAll } from 'vitest';
-import request from 'supertest';
 import express from 'express';
+import 'reflect-metadata';
+import request from 'supertest';
 import { DataSource } from 'typeorm';
-import { Session } from '../entities/Session.js';
-import { setDataSource } from '../database.js';
-import { sessionMiddleware } from '../config/session.js';
-import { SessionRouter } from '../routes/session.js';
-import { SessionRepository } from '../services/sessionRepository.js';
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { sessionMiddleware } from '../config/session.config.js';
+import { SessionEntity } from '../entities/Session.entity.js';
+import { SessionRouter } from '../routers/session.router.js';
+import { setDataSource } from '../services/database.service.js';
+import { SessionRepositoryService } from '../services/sessionRepository.service.js';
 
 let testDataSource: DataSource;
-let sessionRepository: SessionRepository;
+let sessionRepository: SessionRepositoryService;
 
 function createApp() {
   const app = express();
@@ -27,11 +27,11 @@ beforeAll(async () => {
     database: ':memory:',
     synchronize: true,
     logging: false,
-    entities: [Session],
+    entities: [SessionEntity],
   });
   await testDataSource.initialize();
   setDataSource(testDataSource);
-  sessionRepository = new SessionRepository();
+  sessionRepository = new SessionRepositoryService();
 });
 
 afterAll(async () => {
