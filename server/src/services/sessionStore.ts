@@ -1,54 +1,60 @@
 import { v4 as uuidv4 } from 'uuid';
 import { INITIAL_CREDITS } from '@casino/shared';
+import { getSessionRepository } from '../database.js';
+import { Session } from '../entities/Session.js';
 
-export interface Session {
-  id: string;
-  playerId: string;
-  credits: number;
-  active: boolean;
-}
+export type { Session };
 
-const sessions = new Map<string, Session>();
-
-export function createSession(playerId: string): Session {
-  const session: Session = {
+export async function createSession(playerId: string): Promise<Session> {
+  const repo = getSessionRepository();
+  const session = repo.create({
     id: uuidv4(),
     playerId,
     credits: INITIAL_CREDITS,
     active: true,
-  };
-  sessions.set(session.id, session);
+  });
+  await repo.save(session);
   return session;
 }
 
-export function getSession(id: string): Session | undefined {
-  return sessions.get(id);
+export async function getSession(id: string): Promise<Session | null> {
+  const repo = getSessionRepository();
+  return repo.findOneBy({ id });
 }
 
-export function updateCredits(id: string, delta: number): Session {
-  const session = sessions.get(id);
+export async function updateCredits(id: string, delta: number): Promise<Session> {
+  const repo = getSessionRepository();
+  const session = await repo.findOneBy({ id });
+
   if (!session) {
     throw new Error(`Session ${id} not found`);
   }
   if (!session.active) {
     throw new Error(`Session ${id} is closed`);
   }
+
   session.credits += delta;
+  await repo.save(session);
   return session;
 }
 
-export function closeSession(id: string): Session {
-  const session = sessions.get(id);
+export async function closeSession(id: string): Promise<Session> {
+  const repo = getSessionRepository();
+  const session = await repo.findOneBy({ id });
+
   if (!session) {
     throw new Error(`Session ${id} not found`);
   }
   if (!session.active) {
     throw new Error(`Session ${id} is already closed`);
   }
+
   session.active = false;
+  await repo.save(session);
   return session;
 }
 
-export function clearAllSessions(): void {
-  sessions.clear();
+export async function clearAllSessions(): Promise<void> {
+  const repo = getSessionRepository();
+  await repo.clear();
 }

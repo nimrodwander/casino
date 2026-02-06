@@ -1,8 +1,14 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import 'reflect-metadata';
+import { describe, it, expect, beforeAll, beforeEach, afterAll } from 'vitest';
 import request from 'supertest';
 import express from 'express';
+import { DataSource } from 'typeorm';
+import { Session } from '../entities/Session.js';
+import { setDataSource } from '../database.js';
 import sessionRouter from '../routes/session.js';
 import { clearAllSessions } from '../services/sessionStore.js';
+
+let testDataSource: DataSource;
 
 function createApp() {
   const app = express();
@@ -11,11 +17,29 @@ function createApp() {
   return app;
 }
 
+beforeAll(async () => {
+  testDataSource = new DataSource({
+    type: 'better-sqlite3',
+    database: ':memory:',
+    synchronize: true,
+    logging: false,
+    entities: [Session],
+  });
+  await testDataSource.initialize();
+  setDataSource(testDataSource);
+});
+
+afterAll(async () => {
+  if (testDataSource?.isInitialized) {
+    await testDataSource.destroy();
+  }
+});
+
 describe('Session Routes', () => {
   let app: express.Express;
 
-  beforeEach(() => {
-    clearAllSessions();
+  beforeEach(async () => {
+    await clearAllSessions();
     app = createApp();
   });
 

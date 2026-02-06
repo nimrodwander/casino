@@ -11,11 +11,16 @@
   },
   "dependencies": {
     "@casino/shared": "*",
+    "better-sqlite3": "^12.6.2",
     "cors": "^2.8.5",
+    "dotenv": "^17.2.4",
     "express": "^4.21.0",
+    "reflect-metadata": "^0.2.2",
+    "typeorm": "^0.3.28",
     "uuid": "^10.0.0"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/supertest": "^6.0.2",

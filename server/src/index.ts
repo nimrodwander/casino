@@ -1,5 +1,8 @@
+import 'reflect-metadata';
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
+import { initializeDatabase } from './database.js';
 import sessionRouter from './routes/session.js';
 
 const app = express();
@@ -10,8 +13,18 @@ app.use(express.json());
 
 app.use('/api/session', sessionRouter);
 
-app.listen(PORT, () => {
-  console.log(`Casino server running on http://localhost:${PORT}`);
+async function startServer() {
+  await initializeDatabase();
+  console.log('Database initialized');
+
+  app.listen(PORT, () => {
+    console.log(`Casino server running on http://localhost:${PORT}`);
+  });
+}
+
+startServer().catch((err) => {
+  console.error('Failed to start server:', err);
+  process.exit(1);
 });
 
 export { app };

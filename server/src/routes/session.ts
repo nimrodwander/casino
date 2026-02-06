@@ -12,9 +12,9 @@ import { rollWithCheat } from '../services/slotMachine.js';
 const router = Router();
 
 // POST /api/session — create a new game session
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   const { playerId } = req.body as { playerId?: string };
-  const session = createSession(playerId ?? '');
+  const session = await createSession(playerId ?? '');
   const response: CreateSessionResponse = {
     sessionId: session.id,
     credits: session.credits,
@@ -24,9 +24,9 @@ router.post('/', (req, res) => {
 });
 
 // POST /api/session/:id/roll — roll the slot machine
-router.post('/:id/roll', (req, res) => {
+router.post('/:id/roll', async (req, res) => {
   const { id } = req.params;
-  const session = getSession(id);
+  const session = await getSession(id);
 
   if (!session) {
     const error: ErrorResponse = { error: 'Session not found' };
@@ -47,29 +47,32 @@ router.post('/:id/roll', (req, res) => {
   }
 
   // Deduct roll cost
-  updateCredits(id, -ROLL_COST);
+  await updateCredits(id, -ROLL_COST);
 
   // Perform roll with potential cheat
   const result = rollWithCheat(session.credits);
 
   // Add reward if won
   if (result.win) {
-    updateCredits(id, result.reward);
+    await updateCredits(id, result.reward);
   }
+
+  // Fetch updated session to get current credits
+  const updatedSession = await getSession(id);
 
   const response: RollResponse = {
     symbols: result.symbols,
     win: result.win,
     reward: result.reward,
-    credits: session.credits,
+    credits: updatedSession!.credits,
   };
   res.json(response);
 });
 
 // POST /api/session/:id/cashout — cash out and close session
-router.post('/:id/cashout', (req, res) => {
+router.post('/:id/cashout', async (req, res) => {
   const { id } = req.params;
-  const session = getSession(id);
+  const session = await getSession(id);
 
   if (!session) {
     const error: ErrorResponse = { error: 'Session not found' };
@@ -84,7 +87,7 @@ router.post('/:id/cashout', (req, res) => {
   }
 
   const finalCredits = session.credits;
-  closeSession(id);
+  await closeSession(id);
 
   const response: CashOutResponse = {
     credits: finalCredits,
