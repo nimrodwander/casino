@@ -7,9 +7,9 @@ import { ReelStrip } from './ReelStrip';
 import { CashOutButton } from './CashOutButton';
 import { slotMachineStore } from '../stores/SlotMachineStore';
 import { useReelReveal } from '../hooks/useReelReveal';
+import { DEFAULT_REEL_COUNT } from '../../../shared/src/constants';
 
 export const Game: React.FC = observer(() => {
-  const DEFAULT_REEL_COUNT = 3;
   const store = slotMachineStore;
   const navigate = useNavigate();
   const { revealedCount, spinning, startReveal, resetReveal } = useReelReveal<string>();

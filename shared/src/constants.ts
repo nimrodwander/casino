@@ -4,3 +4,5 @@ export const SYMBOLS: Record<string, number> = {
   orange: 30,
   watermelon: 40,
 };
+
+export const DEFAULT_REEL_COUNT = 3;

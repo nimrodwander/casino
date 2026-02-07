@@ -8,6 +8,7 @@ import { config } from '../config.js';
 import { AppError } from '../errors/AppError.js';
 import { GameHistoryRepositoryService } from '../services/gameHistoryRepository.service.js';
 import { SlotMachineService } from '../services/slotMachine.service.js';
+import { DEFAULT_REEL_COUNT } from '../../../shared/src/constants.js';
 
 export class GameRouter {
   public router: Router;
@@ -61,7 +62,7 @@ export class GameRouter {
     }
 
     gameSession.credits -= config.rollCost;
-    const result = this.slotMachine.roll(gameSession.credits, 3);
+    const result = this.slotMachine.roll(gameSession.credits, DEFAULT_REEL_COUNT);
     gameSession.credits += result.reward;
 
     res.json({ symbols: result.symbols, reward: result.reward, credits: gameSession.credits } satisfies RollResponse);
