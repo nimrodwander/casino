@@ -31,7 +31,6 @@ export const cashOutResponseSchema = z.object({
 export const responseSchema = z.object({
   data: z.unknown(),
   message: z.string().optional(),
-  error: z.string().optional(),
 });
 
 // Inferred types

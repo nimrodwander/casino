@@ -106,6 +106,6 @@ export class GameRouter {
       credits,
       message: `Cashed out ${credits} credits. Thanks for playing!`,
     };
-    res.json({ data, message: `Cashed out ${credits} credits. Thanks for playing!` });
+    res.json({ data });
   }
 }

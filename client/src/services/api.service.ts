@@ -14,7 +14,7 @@ class ApiService {
     this.client.interceptors.response.use(
       (response) => response,
       (error) => {
-        const message = (error.response?.data as Response)?.error || error.message;
+        const message = (error.response?.data as Response)?.message || error.message;
         errorStore.setError(message);
         return Promise.reject(error);
       },

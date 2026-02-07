@@ -10,8 +10,8 @@ export function responseValidationMiddleware(dataSchema?: ZodSchema) {
       // Validate envelope structure
       const validatedEnvelope = responseSchema.parse(body);
       
-      // Validate data content if schema provided and response has no error
-      if (dataSchema && !validatedEnvelope.error) {
+      // Validate data content if schema provided and status is success (< 400)
+      if (dataSchema && res.statusCode < 400) {
         validatedEnvelope.data = dataSchema.parse(validatedEnvelope.data);
       }
       

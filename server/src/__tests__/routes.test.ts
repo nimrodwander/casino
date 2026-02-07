@@ -99,7 +99,7 @@ describe('Game Routes', () => {
     it('should return 404 when no session exists', async () => {
       const res = await request(app).post('/api/game/roll');
       expect(res.status).toBe(404);
-      expect(res.body.error).toBeDefined();
+      expect(res.body.message).toBeDefined();
     });
 
     it('should return 404 after cashout', async () => {
@@ -122,7 +122,7 @@ describe('Game Routes', () => {
         if (res.body.data?.credits === 0 && status === 200) {
           const nextRes = await agent.post('/api/game/roll');
           expect(nextRes.status).toBe(400);
-          expect(nextRes.body.error).toContain('credits');
+          expect(nextRes.body.message).toContain('credits');
           return;
         }
       }
