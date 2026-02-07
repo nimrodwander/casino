@@ -76,7 +76,6 @@ describe('Session Routes', () => {
       const rollRes = await agent.post('/api/session/roll');
       expect(rollRes.status).toBe(200);
       expect(rollRes.body.symbols).toHaveLength(3);
-      expect(typeof rollRes.body.win).toBe('boolean');
       expect(typeof rollRes.body.reward).toBe('number');
       expect(typeof rollRes.body.credits).toBe('number');
     });
@@ -88,7 +87,7 @@ describe('Session Routes', () => {
       let lastCredits = 10;
       for (let i = 0; i < 5; i++) {
         const rollRes = await agent.post('/api/session/roll');
-        if (!rollRes.body.win) {
+        if (rollRes.body.reward === 0) {
           expect(rollRes.body.credits).toBe(lastCredits - 1);
         }
         lastCredits = rollRes.body.credits;

@@ -18,8 +18,7 @@ describe('SlotMachineService', () => {
       const result = slotMachine.roll(10, 3);
       expect(result.symbols).toHaveLength(3);
       result.symbols.forEach((s) => expect(ALL_SYMBOLS).toContain(s));
-      expect(typeof result.win).toBe('boolean');
-      if (result.win) {
+      if (result.reward > 0) {
         expect(result.reward).toBe(SYMBOL_REWARDS[result.symbols[0]]);
       } else {
         expect(result.reward).toBe(0);
@@ -32,7 +31,6 @@ describe('SlotMachineService', () => {
 
       const result = slotMachine.roll(30, 3);
       expect(result.symbols).toEqual(['C', 'C', 'C']);
-      expect(result.win).toBe(true);
       expect(result.reward).toBe(10);
       expect(mockRandom).toHaveBeenCalledTimes(3);
     });
@@ -50,7 +48,6 @@ describe('SlotMachineService', () => {
 
       const result = slotMachine.roll(50, 3);
       expect(result.symbols).toEqual(['C', 'L', 'O']);
-      expect(result.win).toBe(false);
       expect(result.reward).toBe(0);
     });
 
@@ -64,7 +61,7 @@ describe('SlotMachineService', () => {
 
       const result = slotMachine.roll(50, 3);
       expect(result.symbols).toEqual(['C', 'C', 'C']);
-      expect(result.win).toBe(true);
+      expect(result.reward).toBe(10);
     });
 
     it('should re-roll with 60% chance when credits are above 60 and roll is a win', () => {
@@ -80,7 +77,7 @@ describe('SlotMachineService', () => {
 
       const result = slotMachine.roll(70, 3);
       expect(result.symbols).toEqual(['C', 'L', 'O']);
-      expect(result.win).toBe(false);
+      expect(result.reward).toBe(0);
     });
 
     it('should never cheat on a losing roll', () => {
@@ -91,7 +88,7 @@ describe('SlotMachineService', () => {
         .mockReturnValueOnce(0.5);
 
       const result = slotMachine.roll(100, 3);
-      expect(result.win).toBe(false);
+      expect(result.reward).toBe(0);
       expect(mockRandom).toHaveBeenCalledTimes(3);
     });
   });

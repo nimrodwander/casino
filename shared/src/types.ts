@@ -39,7 +39,6 @@ export interface CreateSessionResponse {
 
 export interface RollResponse {
   symbols: SlotSymbol[];
-  win: boolean;
   reward: number;
   credits: number;
 }

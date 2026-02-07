@@ -10,12 +10,11 @@ import {
 
 export interface RollResult {
   symbols: SlotSymbol[];
-  win: boolean;
   reward: number;
 }
 
 export class SlotMachineService {
-  private getCheatChance(credits: number): number {
+  private getRerollChance(credits: number): number {
     if (credits > CHEAT_THRESHOLD_HIGH) {
       return CHEAT_CHANCE_HIGH;
     }
@@ -40,18 +39,20 @@ export class SlotMachineService {
   }
 
   public roll(currentCredits: number, reelCount: number): RollResult {
-    let symbols = this.generateSymbolSequence(reelCount);
-    let reward = this.calculateReward(symbols);
+    let generatedSymbols = this.generateSymbolSequence(reelCount);
+    let reward = this.calculateReward(generatedSymbols);
 
-    if (reward > 0) {
-      const cheatChance = this.getCheatChance(currentCredits);
-      
-      if (cheatChance > 0 && Math.random() < cheatChance) {
-        symbols = this.generateSymbolSequence(reelCount);
-        reward = this.calculateReward(symbols);
-      }
+    if (reward === 0) {
+      return { symbols: generatedSymbols, reward };
     }
 
-    return { symbols, win: reward > 0, reward };
+    const rerollChance = this.getRerollChance(currentCredits);
+    
+    if (rerollChance > 0 && Math.random() < rerollChance) {
+      generatedSymbols = this.generateSymbolSequence(reelCount);
+      reward = this.calculateReward(generatedSymbols);
+    }
+
+    return { symbols: generatedSymbols, reward };
   }
 }
