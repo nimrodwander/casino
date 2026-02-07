@@ -7,7 +7,7 @@ export const StartGame: React.FC = () => {
   const navigate = useNavigate();
   const [playerId, setPlayerId] = useState('');
 
-  const handleStartGame = async () => {
+  const handleStartGame = async (): Promise<void> => {
     await slotMachineStore.startGame(playerId);
     navigate('/play');
   };

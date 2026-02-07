@@ -11,17 +11,17 @@ class ApiService {
     });
   }
 
-  async createSession(playerId: string): Promise<CreateSessionResponse> {
+  public async createSession(playerId: string): Promise<CreateSessionResponse> {
     const { data } = await this.client.post<CreateSessionResponse>('', { playerId });
     return data;
   }
 
-  async roll(): Promise<RollResponse> {
+  public async roll(): Promise<RollResponse> {
     const { data } = await this.client.post<RollResponse>('/roll');
     return data;
   }
 
-  async cashOut(): Promise<CashOutResponse> {
+  public async cashOut(): Promise<CashOutResponse> {
     const { data } = await this.client.post<CashOutResponse>('/cashout');
     return data;
   }

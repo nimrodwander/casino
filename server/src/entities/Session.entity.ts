@@ -3,14 +3,14 @@ import { Entity, PrimaryColumn, Column } from 'typeorm';
 @Entity('sessions')
 export class SessionEntity {
   @PrimaryColumn('text')
-  id!: string;
+  public id!: string;
 
   @Column('text', { name: 'user_id' })
-  playerId!: string;
+  public playerId!: string;
 
   @Column('integer', { default: 10 })
-  credits!: number;
+  public credits!: number;
 
   @Column('boolean', { name: 'is_active', default: true })
-  active!: boolean;
+  public active!: boolean;
 }

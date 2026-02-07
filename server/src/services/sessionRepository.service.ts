@@ -18,7 +18,7 @@ export class SessionRepositoryService {
     return this._repo;
   }
 
-  async persist(
+  public async persist(
     sessionId: string,
     playerId: string,
     credits: number
@@ -33,15 +33,15 @@ export class SessionRepositoryService {
     return session;
   }
 
-  async findById(id: string): Promise<SessionEntity | null> {
+  public async findById(id: string): Promise<SessionEntity | null> {
     return this.repo.findOneBy({ id });
   }
 
-  async findByPlayerId(playerId: string): Promise<SessionEntity[]> {
+  public async findByPlayerId(playerId: string): Promise<SessionEntity[]> {
     return this.repo.findBy({ playerId });
   }
 
-  async clear(): Promise<void> {
+  public async clear(): Promise<void> {
     await this.repo.clear();
   }
 }

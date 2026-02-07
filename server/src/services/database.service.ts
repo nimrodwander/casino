@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { DataSource } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { SessionEntity } from '../entities/Session.entity.js';
 
 export class DatabaseService {
@@ -11,22 +11,22 @@ export class DatabaseService {
     entities: [SessionEntity],
   });
 
-  async initialize(): Promise<DataSource> {
+  public async initialize(): Promise<DataSource> {
     if (!this.dataSource.isInitialized) {
       await this.dataSource.initialize();
     }
     return this.dataSource;
   }
 
-  getSessionRepository() {
+  public getSessionRepository(): Repository<SessionEntity> {
     return this.dataSource.getRepository(SessionEntity);
   }
 
-  getDataSource(): DataSource {
+  public getDataSource(): DataSource {
     return this.dataSource;
   }
 
-  setDataSource(ds: DataSource): void {
+  public setDataSource(ds: DataSource): void {
     this.dataSource = ds;
   }
 }

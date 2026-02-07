@@ -1,6 +1,13 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 
-export function useReelReveal<T>(intervalMs = 1000) {
+interface UseReelRevealResult<T> {
+  revealedCount: number;
+  spinning: boolean;
+  startReveal: (items: T[], onComplete: (items: T[]) => void) => void;
+  resetReveal: () => void;
+}
+
+export function useReelReveal<T>(intervalMs = 1000): UseReelRevealResult<T> {
   const [revealedCount, setRevealedCount] = useState(0);
   const [spinning, setSpinning] = useState(false);
   const itemsRef = useRef<T[]>([]);
@@ -24,7 +31,7 @@ export function useReelReveal<T>(intervalMs = 1000) {
       );
     }
 
-    return () => timers.forEach(clearTimeout);
+    return (): void => { timers.forEach(clearTimeout); };
   }, [spinning, intervalMs]);
 
   const startReveal = useCallback((items: T[], onComplete: (items: T[]) => void) => {

@@ -12,7 +12,7 @@ import { SessionRepositoryService } from '../services/sessionRepository.service.
 let testDataSource: DataSource;
 let sessionRepository: SessionRepositoryService;
 
-function createApp() {
+function createApp(): express.Express {
   const app = express();
   app.use(express.json());
   app.use(sessionMiddleware);

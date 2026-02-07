@@ -21,7 +21,7 @@ const mockCashOut = vi.mocked(apiService.cashOut);
 
 const theme = createTheme({ palette: { mode: 'dark' } });
 
-function renderWithTheme() {
+function renderWithTheme(): ReturnType<typeof render> {
   return render(
     <ThemeProvider theme={theme}>
       <SlotMachine />

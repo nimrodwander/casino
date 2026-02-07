@@ -15,7 +15,7 @@ export const Game: React.FC = observer(() => {
   const navigate = useNavigate();
   const { revealedCount, spinning, startReveal, resetReveal } = useReelReveal<SlotSymbol>();
 
-  const handleRoll = async () => {
+  const handleRoll = async (): Promise<void> => {
     if (spinning) return;
     const result = await store.roll();
     if (result) {
@@ -23,7 +23,7 @@ export const Game: React.FC = observer(() => {
     }
   };
 
-  const handleCashOut = async () => {
+  const handleCashOut = async (): Promise<void> => {
     await store.cashOut();
     resetReveal();
     store.reset();

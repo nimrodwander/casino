@@ -9,7 +9,7 @@ export class SlotMachineStore {
   public symbols: SymbolTriplet | null = null;
   public lastRoll: RollResponse | null = null;
 
-  public constructor() {
+  constructor() {
     makeAutoObservable(this);
   }
 

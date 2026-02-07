@@ -21,15 +21,15 @@ export class SlotMachineService {
     return ALL_SYMBOLS[index];
   }
 
-  generateRoll(): SymbolTriplet {
+  public generateRoll(): SymbolTriplet {
     return [this.randomSymbol(), this.randomSymbol(), this.randomSymbol()];
   }
 
-  isWin(symbols: SymbolTriplet): boolean {
+  public isWin(symbols: SymbolTriplet): boolean {
     return symbols[0] === symbols[1] && symbols[1] === symbols[2];
   }
 
-  getReward(symbol: SlotSymbol): number {
+  public getReward(symbol: SlotSymbol): number {
     return SYMBOL_REWARDS[symbol];
   }
 
@@ -49,7 +49,7 @@ export class SlotMachineService {
     return { symbols, win, reward };
   }
 
-  roll(currentCredits: number): RollResult {
+  public roll(currentCredits: number): RollResult {
     const symbols = this.generateRoll();
     const result = this.evaluateRoll(symbols);
 

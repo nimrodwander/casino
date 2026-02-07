@@ -21,7 +21,7 @@ export function useSpinAnimation(
       setSpinChar(spinChars[index]);
     }, spinIntervalMs);
 
-    return () => clearInterval(interval);
+    return (): void => { clearInterval(interval); };
   }, [active, spinChars, spinIntervalMs]);
 
   return spinChar;

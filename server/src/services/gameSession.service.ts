@@ -12,15 +12,15 @@ export class GameSessionService {
     this.slotMachine = new SlotMachineService();
   }
 
-  get credits(): number {
+  public get credits(): number {
     return this._credits;
   }
 
-  canRoll(): boolean {
+  public canRoll(): boolean {
     return this._credits >= ROLL_COST;
   }
 
-  roll(): RollResult {
+  public roll(): RollResult {
     if (this._credits < ROLL_COST) {
       throw new Error('Not enough credits');
     }
@@ -39,7 +39,7 @@ export class GameSessionService {
     return result;
   }
 
-  cashOut(): number {
+  public cashOut(): number {
     return this._credits;
   }
 }

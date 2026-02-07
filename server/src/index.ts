@@ -18,7 +18,7 @@ app.use(sessionMiddleware);
 
 app.use('/api/session', sessionRouter);
 
-async function startServer() {
+async function startServer(): Promise<void> {
   await databaseService.initialize();
   console.log('Database initialized');
 
