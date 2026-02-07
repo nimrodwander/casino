@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
 import type { ZodSchema } from 'zod';
-import { BadRequestError } from '../errors/index.js';
+import { BadRequestError } from '../errors/BadRequestError.js';
 
 export function validationMiddleware(schema: ZodSchema) {
   return (req: Request, _res: Response, next: NextFunction): void => {

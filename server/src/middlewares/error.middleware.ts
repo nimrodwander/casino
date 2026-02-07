@@ -1,7 +1,7 @@
 import { errorResponseSchema } from '@casino/shared';
 import type { NextFunction, Request, Response } from 'express';
 import { ZodError } from 'zod';
-import { AppError } from '../errors/index.js';
+import { AppError } from '../errors/AppError.js';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function errorMiddleware(err: Error, req: Request, res: Response, next: NextFunction): void {
