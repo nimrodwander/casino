@@ -7,11 +7,12 @@ import {
   rollRequestSchema,
   rollResponseSchema,
 } from '@casino/shared';
-import { NextFunction, Request, Response, Router } from 'express';
+import { Request, Response, Router } from 'express';
 import { DEFAULT_REEL_COUNT } from '../../../shared/src/constants.js';
 import { config } from '../config.js';
 import { BadRequestError } from '../errors/BadRequestError.js';
 import { NotFoundError } from '../errors/NotFoundError.js';
+import { asyncHandlerMiddleware } from '../middlewares/asyncHandler.middleware.js';
 import { validationMiddleware } from '../middlewares/validation.middleware.js';
 import { GameHistoryRepositoryService } from '../services/gameHistoryRepository.service.js';
 import { SlotMachineService } from '../services/slotMachine.service.js';
@@ -28,24 +29,18 @@ export class GameRouter {
     this.router.post(
       '/',
       validationMiddleware(createSessionRequestSchema),
-      this.asyncHandler(this.createSession.bind(this))
+      asyncHandlerMiddleware(this.createSession.bind(this))
     );
     this.router.post(
       '/roll',
       validationMiddleware(rollRequestSchema),
-      this.asyncHandler(this.roll.bind(this))
+      asyncHandlerMiddleware(this.roll.bind(this))
     );
     this.router.post(
       '/cashout',
       validationMiddleware(cashOutRequestSchema),
-      this.asyncHandler(this.cashOut.bind(this))
+      asyncHandlerMiddleware(this.cashOut.bind(this))
     );
-  }
-
-  private asyncHandler(fn: (req: Request, res: Response) => Promise<void> | void) {
-    return (req: Request, res: Response, next: NextFunction): void => {
-      Promise.resolve(fn(req, res)).catch(next);
-    };
   }
 
   private createSession(req: Request, res: Response): void {
