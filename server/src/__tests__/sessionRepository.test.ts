@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import { DataSource } from 'typeorm';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { SessionEntity } from '../entities/Session.entity.js';
-import { setDataSource } from '../services/database.service.js';
+import { databaseService } from '../services/database.service.js';
 import { SessionRepositoryService } from '../services/sessionRepository.service.js';
 
 let testDataSource: DataSource;
@@ -17,7 +17,7 @@ beforeAll(async () => {
     entities: [SessionEntity],
   });
   await testDataSource.initialize();
-  setDataSource(testDataSource);
+  databaseService.setDataSource(testDataSource);
   sessionRepository = new SessionRepositoryService();
 });
 

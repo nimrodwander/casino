@@ -4,7 +4,7 @@ import express from 'express';
 import 'reflect-metadata';
 import { sessionMiddleware } from './config/session.config.js';
 import sessionRouter from './routers/session.router.js';
-import { initializeDatabase } from './services/database.service.js';
+import { databaseService } from './services/database.service.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -19,7 +19,7 @@ app.use(sessionMiddleware);
 app.use('/api/session', sessionRouter);
 
 async function startServer() {
-  await initializeDatabase();
+  await databaseService.initialize();
   console.log('Database initialized');
 
   app.listen(PORT, () => {

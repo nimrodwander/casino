@@ -1,6 +1,6 @@
 import { Repository } from 'typeorm';
 import { SessionEntity } from '../entities/Session.entity.js';
-import { getSessionRepository } from './database.service.js';
+import { databaseService } from './database.service.js';
 
 export class SessionRepositoryService {
   private _repo: Repository<SessionEntity> | null = null;
@@ -13,7 +13,7 @@ export class SessionRepositoryService {
 
   private get repo(): Repository<SessionEntity> {
     if (!this._repo) {
-      this._repo = getSessionRepository();
+      this._repo = databaseService.getSessionRepository();
     }
     return this._repo;
   }
