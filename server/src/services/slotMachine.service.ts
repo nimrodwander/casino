@@ -15,23 +15,6 @@ export interface RollResult {
 }
 
 export class SlotMachineService {
-  private randomSymbol(): SlotSymbol {
-    const index = Math.floor(Math.random() * ALL_SYMBOLS.length);
-    return ALL_SYMBOLS[index];
-  }
-
-  public generateRoll(reelCount: number): SlotSymbol[] {
-    return Array.from({ length: reelCount }, () => this.randomSymbol());
-  }
-
-  public isWin(symbols: SlotSymbol[]): boolean {
-    return symbols.every((s) => s === symbols[0]);
-  }
-
-  public getReward(symbol: SlotSymbol): number {
-    return SYMBOL_REWARDS[symbol];
-  }
-
   private getCheatChance(credits: number): number {
     if (credits > CHEAT_THRESHOLD_HIGH) {
       return CHEAT_CHANCE_HIGH;
@@ -42,15 +25,24 @@ export class SlotMachineService {
     return 0;
   }
 
-  private evaluateRoll(symbols: SlotSymbol[]): RollResult {
-    const win = this.isWin(symbols);
-    const reward = win ? this.getReward(symbols[0]) : 0;
+  private generateRandomSymbol(): SlotSymbol {
+    const index = Math.floor(Math.random() * ALL_SYMBOLS.length);
+    return ALL_SYMBOLS[index];
+  }
+
+  private generateSymbolSequence(reelCount: number): SlotSymbol[] {
+    return Array.from({ length: reelCount }, () => this.generateRandomSymbol());
+  }
+
+  private evaluate(symbols: SlotSymbol[]): RollResult {
+    const win = symbols.every((s) => s === symbols[0]);
+    const reward = win ? SYMBOL_REWARDS[symbols[0]] : 0;
     return { symbols, win, reward };
   }
 
   public roll(currentCredits: number, reelCount: number): RollResult {
-    const symbols = this.generateRoll(reelCount);
-    const result = this.evaluateRoll(symbols);
+    const symbols = this.generateSymbolSequence(reelCount);
+    const result = this.evaluate(symbols);
 
     if (!result.win) {
       return result;
@@ -63,8 +55,8 @@ export class SlotMachineService {
 
     // Decide whether to re-roll (house always wins!)
     if (Math.random() < cheatChance) {
-      const rerolledSymbols = this.generateRoll(reelCount);
-      return this.evaluateRoll(rerolledSymbols);
+      const rerolledSymbols = this.generateSymbolSequence(reelCount);
+      return this.evaluate(rerolledSymbols);
     }
 
     return result;

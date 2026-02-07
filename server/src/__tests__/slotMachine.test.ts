@@ -13,40 +13,6 @@ describe('SlotMachineService', () => {
     vi.restoreAllMocks();
   });
 
-  describe('generateRoll', () => {
-    it('should return an array of 3 symbols', () => {
-      const roll = slotMachine.generateRoll(3);
-      expect(roll).toHaveLength(3);
-      roll.forEach((symbol) => {
-        expect(ALL_SYMBOLS).toContain(symbol);
-      });
-    });
-  });
-
-  describe('isWin', () => {
-    it('should return true when all symbols match', () => {
-      expect(slotMachine.isWin(['C', 'C', 'C'])).toBe(true);
-      expect(slotMachine.isWin(['L', 'L', 'L'])).toBe(true);
-      expect(slotMachine.isWin(['O', 'O', 'O'])).toBe(true);
-      expect(slotMachine.isWin(['W', 'W', 'W'])).toBe(true);
-    });
-
-    it('should return false when symbols differ', () => {
-      expect(slotMachine.isWin(['C', 'L', 'O'])).toBe(false);
-      expect(slotMachine.isWin(['C', 'C', 'L'])).toBe(false);
-      expect(slotMachine.isWin(['W', 'L', 'W'])).toBe(false);
-    });
-  });
-
-  describe('getReward', () => {
-    it('should return correct reward for each symbol', () => {
-      expect(slotMachine.getReward('C')).toBe(10);
-      expect(slotMachine.getReward('L')).toBe(20);
-      expect(slotMachine.getReward('O')).toBe(30);
-      expect(slotMachine.getReward('W')).toBe(40);
-    });
-  });
-
   describe('roll', () => {
     it('should return a valid result with low credits (no cheat)', () => {
       const result = slotMachine.roll(10, 3);
