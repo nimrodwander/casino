@@ -12,8 +12,9 @@ import { DEFAULT_REEL_COUNT } from '../../../shared/src/constants.js';
 import { config } from '../config.js';
 import { BadRequestError } from '../errors/BadRequestError.js';
 import { NotFoundError } from '../errors/NotFoundError.js';
-import { asyncHandlerMiddleware as asyncHandler } from '../middlewares/asyncHandler.middleware.js';
+import { asyncHandler } from '../middlewares/asyncHandler.middleware.js';
 import { requestValidationMiddleware } from '../middlewares/requestValidation.middleware.js';
+import { responseValidationMiddleware } from '../middlewares/responseValidation.middleware.js';
 import { GameHistoryRepositoryService } from '../services/gameHistoryRepository.service.js';
 import { SlotMachineService } from '../services/slotMachine.service.js';
 
@@ -29,16 +30,19 @@ export class GameRouter {
     this.router.post(
       '/',
       requestValidationMiddleware(createSessionRequestSchema),
+      responseValidationMiddleware(createSessionResponseSchema),
       asyncHandler(this.createSession.bind(this))
     );
     this.router.post(
       '/roll',
       requestValidationMiddleware(rollRequestSchema),
+      responseValidationMiddleware(rollResponseSchema),
       asyncHandler(this.roll.bind(this))
     );
     this.router.post(
       '/cashout',
       requestValidationMiddleware(cashOutRequestSchema),
+      responseValidationMiddleware(cashOutResponseSchema),
       asyncHandler(this.cashOut.bind(this))
     );
   }
@@ -55,12 +59,12 @@ export class GameRouter {
     }
 
     const session = req.session.gameSession;
-    const response = createSessionResponseSchema.parse({
+    const data = {
       sessionId: req.session.id,
       credits: session?.credits || 0,
       playerId: session?.playerId || '',
-    });
-    res.status(existing ? 200 : 201).json(response);
+    };
+    res.status(existing ? 200 : 201).json({ data });
   }
 
   private roll(req: Request, res: Response): void {
@@ -78,12 +82,12 @@ export class GameRouter {
     const result = this.slotMachine.roll(gameSession.credits, DEFAULT_REEL_COUNT);
     gameSession.credits += result.reward;
 
-    const response = rollResponseSchema.parse({
+    const data = {
       symbols: result.symbols,
       reward: result.reward,
       credits: gameSession.credits,
-    });
-    res.json(response);
+    };
+    res.json({ data });
   }
 
   private async cashOut(req: Request, res: Response): Promise<void> {
@@ -98,10 +102,10 @@ export class GameRouter {
     await this.gameHistoryRepository.persist(req.session.id, playerId, credits);
     req.session.destroy((err) => err && console.error('Error destroying session:', err));
 
-    const response = cashOutResponseSchema.parse({
+    const data = {
       credits,
       message: `Cashed out ${credits} credits. Thanks for playing!`,
-    });
-    res.json(response);
+    };
+    res.json({ data, message: `Cashed out ${credits} credits. Thanks for playing!` });
   }
 }

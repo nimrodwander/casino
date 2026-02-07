@@ -52,9 +52,9 @@ describe('Game Routes', () => {
     it('should create a new session with 10 credits', async () => {
       const res = await request(app).post('/api/game').send({ playerId: 'test-player' });
       expect(res.status).toBe(201);
-      expect(res.body.sessionId).toBeDefined();
-      expect(res.body.credits).toBe(10);
-      expect(res.body.playerId).toBe('test-player');
+      expect(res.body.data.sessionId).toBeDefined();
+      expect(res.body.data.credits).toBe(10);
+      expect(res.body.data.playerId).toBe('test-player');
     });
 
     it('should return existing session if one already exists', async () => {
@@ -65,8 +65,8 @@ describe('Game Routes', () => {
 
       const res2 = await agent.post('/api/game').send({ playerId: 'test-player' });
       expect(res2.status).toBe(200);
-      expect(res2.body.sessionId).toBe(res1.body.sessionId);
-      expect(res2.body.credits).toBe(res1.body.credits);
+      expect(res2.body.data.sessionId).toBe(res1.body.data.sessionId);
+      expect(res2.body.data.credits).toBe(res1.body.data.credits);
     });
   });
 
@@ -77,9 +77,9 @@ describe('Game Routes', () => {
 
       const rollRes = await agent.post('/api/game/roll');
       expect(rollRes.status).toBe(200);
-      expect(rollRes.body.symbols).toHaveLength(3);
-      expect(typeof rollRes.body.reward).toBe('number');
-      expect(typeof rollRes.body.credits).toBe('number');
+      expect(rollRes.body.data.symbols).toHaveLength(3);
+      expect(typeof rollRes.body.data.reward).toBe('number');
+      expect(typeof rollRes.body.data.credits).toBe('number');
     });
 
     it('should deduct 1 credit per roll on a loss', async () => {
@@ -89,10 +89,10 @@ describe('Game Routes', () => {
       let lastCredits = 10;
       for (let i = 0; i < 5; i++) {
         const rollRes = await agent.post('/api/game/roll');
-        if (rollRes.body.reward === 0) {
-          expect(rollRes.body.credits).toBe(lastCredits - 1);
+        if (rollRes.body.data.reward === 0) {
+          expect(rollRes.body.data.credits).toBe(lastCredits - 1);
         }
-        lastCredits = rollRes.body.credits;
+        lastCredits = rollRes.body.data.credits;
       }
     });
 
@@ -119,7 +119,7 @@ describe('Game Routes', () => {
       for (let i = 0; i < 20 && status === 200; i++) {
         const res = await agent.post('/api/game/roll');
         status = res.status;
-        if (res.body.credits === 0 && status === 200) {
+        if (res.body.data?.credits === 0 && status === 200) {
           const nextRes = await agent.post('/api/game/roll');
           expect(nextRes.status).toBe(400);
           expect(nextRes.body.error).toContain('credits');
@@ -136,14 +136,14 @@ describe('Game Routes', () => {
 
       const cashoutRes = await agent.post('/api/game/cashout');
       expect(cashoutRes.status).toBe(200);
-      expect(cashoutRes.body.credits).toBe(10);
+      expect(cashoutRes.body.data.credits).toBe(10);
       expect(cashoutRes.body.message).toContain('Cashed out');
     });
 
     it('should persist session to database on cashout', async () => {
       const agent = request.agent(app);
       const createRes = await agent.post('/api/game').send({ playerId: 'persist-test' });
-      const { sessionId } = createRes.body;
+      const { sessionId } = createRes.body.data;
 
       await agent.post('/api/game/cashout');
 

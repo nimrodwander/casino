@@ -27,8 +27,11 @@ export const cashOutResponseSchema = z.object({
   message: z.string(),
 });
 
-export const errorResponseSchema = z.object({
-  error: z.string(),
+// Envelope schema
+export const responseSchema = z.object({
+  data: z.unknown(),
+  message: z.string().optional(),
+  error: z.string().optional(),
 });
 
 // Inferred types
@@ -36,4 +39,4 @@ export type CreateSessionRequest = z.infer<typeof createSessionRequestSchema>;
 export type CreateSessionResponse = z.infer<typeof createSessionResponseSchema>;
 export type RollResponse = z.infer<typeof rollResponseSchema>;
 export type CashOutResponse = z.infer<typeof cashOutResponseSchema>;
-export type ErrorResponse = z.infer<typeof errorResponseSchema>;
+export type Response = z.infer<typeof responseSchema>;
