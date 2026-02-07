@@ -1,8 +1,3 @@
-// API request types
-export interface CreateSessionRequest {
-  playerId: string;
-}
-
 // API response types
 export interface CreateSessionResponse {
   sessionId: string;

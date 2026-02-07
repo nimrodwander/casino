@@ -10,5 +10,8 @@
   },
   "scripts": {
     "build": "tsc"
+  },
+  "dependencies": {
+    "zod": "^4.3.6"
   }
 }

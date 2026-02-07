@@ -1,14 +1,17 @@
 import type {
   CashOutResponse,
+  CreateSessionRequest,
   CreateSessionResponse,
   RollResponse,
 } from '@casino/shared';
+import { createSessionRequestSchema } from '@casino/shared';
 import { NextFunction, Request, Response, Router } from 'express';
+import { DEFAULT_REEL_COUNT } from '../../../shared/src/constants.js';
 import { config } from '../config.js';
 import { AppError } from '../errors/AppError.js';
+import { validationMiddleware } from '../middlewares/validation.middleware.js';
 import { GameHistoryRepositoryService } from '../services/gameHistoryRepository.service.js';
 import { SlotMachineService } from '../services/slotMachine.service.js';
-import { DEFAULT_REEL_COUNT } from '../../../shared/src/constants.js';
 
 export class GameRouter {
   public router: Router;
@@ -19,7 +22,7 @@ export class GameRouter {
     this.router = Router();
     this.gameHistoryRepository = gameHistoryRepository || new GameHistoryRepositoryService();
 
-    this.router.post('/', this.asyncHandler((req, res) => this.createSession(req, res)));
+    this.router.post('/', validationMiddleware(createSessionRequestSchema), this.asyncHandler((req, res) => this.createSession(req, res)));
     this.router.post('/roll', this.asyncHandler((req, res) => this.roll(req, res)));
     this.router.post('/cashout', this.asyncHandler((req, res) => this.cashOut(req, res)));
   }
@@ -31,12 +34,12 @@ export class GameRouter {
   }
 
   private createSession(req: Request, res: Response): void {
-    const { playerId } = req.body as { playerId?: string };
+    const { playerId } = req.body as CreateSessionRequest;
     const existing = req.session.gameSession;
 
     if (!existing) {
       req.session.gameSession = {
-        playerId: playerId ?? '',
+        playerId,
         credits: config.initialCredits,
       };
     }

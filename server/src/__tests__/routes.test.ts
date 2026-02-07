@@ -73,7 +73,7 @@ describe('Game Routes', () => {
   describe('POST /api/game/roll', () => {
     it('should return a roll result', async () => {
       const agent = request.agent(app);
-      await agent.post('/api/game');
+      await agent.post('/api/game').send({ playerId: 'test-player' });
 
       const rollRes = await agent.post('/api/game/roll');
       expect(rollRes.status).toBe(200);
@@ -84,7 +84,7 @@ describe('Game Routes', () => {
 
     it('should deduct 1 credit per roll on a loss', async () => {
       const agent = request.agent(app);
-      await agent.post('/api/game');
+      await agent.post('/api/game').send({ playerId: 'test-player' });
 
       let lastCredits = 10;
       for (let i = 0; i < 5; i++) {
@@ -104,7 +104,7 @@ describe('Game Routes', () => {
 
     it('should return 404 after cashout', async () => {
       const agent = request.agent(app);
-      await agent.post('/api/game');
+      await agent.post('/api/game').send({ playerId: 'test-player' });
       await agent.post('/api/game/cashout');
 
       const rollRes = await agent.post('/api/game/roll');
@@ -113,7 +113,7 @@ describe('Game Routes', () => {
 
     it('should return 400 when out of credits', async () => {
       const agent = request.agent(app);
-      await agent.post('/api/game');
+      await agent.post('/api/game').send({ playerId: 'test-player' });
 
       let status = 200;
       for (let i = 0; i < 20 && status === 200; i++) {
@@ -132,7 +132,7 @@ describe('Game Routes', () => {
   describe('POST /api/game/cashout', () => {
     it('should cash out and close the session', async () => {
       const agent = request.agent(app);
-      await agent.post('/api/game');
+      await agent.post('/api/game').send({ playerId: 'test-player' });
 
       const cashoutRes = await agent.post('/api/game/cashout');
       expect(cashoutRes.status).toBe(200);
@@ -160,7 +160,7 @@ describe('Game Routes', () => {
 
     it('should not allow double cashout', async () => {
       const agent = request.agent(app);
-      await agent.post('/api/game');
+      await agent.post('/api/game').send({ playerId: 'test-player' });
 
       await agent.post('/api/game/cashout');
       const res = await agent.post('/api/game/cashout');
