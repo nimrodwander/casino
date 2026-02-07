@@ -7,7 +7,7 @@ import { CreditDisplay } from './CreditDisplay';
 import { slotMachineStore } from '../stores/SlotMachineStore';
 
 export const Header: React.FC = observer(() => {
-  const isPlayRoute = useMatch('/play');
+  const isPlayRoute = useMatch('/game');
 
   return (
     <AppBar position="static" color="transparent" elevation={0}>

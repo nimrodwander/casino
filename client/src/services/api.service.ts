@@ -1,12 +1,12 @@
+import type { CashOutResponse, CreateSessionResponse, RollResponse } from '@casino/shared';
 import axios, { type AxiosInstance } from 'axios';
-import type { CreateSessionResponse, RollResponse, CashOutResponse } from '@casino/shared';
 
 class ApiService {
   private client: AxiosInstance;
 
   constructor() {
     this.client = axios.create({
-      baseURL: '/api/session',
+      baseURL: '/api/game',
       withCredentials: true, // Required for cookie-based sessions
     });
   }

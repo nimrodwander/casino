@@ -9,7 +9,7 @@ export const StartGame: React.FC = () => {
 
   const handleStartGame = async (): Promise<void> => {
     await slotMachineStore.startGame(playerId);
-    navigate('/play');
+    navigate('/game');
   };
 
   return (

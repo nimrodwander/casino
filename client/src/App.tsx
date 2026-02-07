@@ -23,7 +23,7 @@ export const App: React.FC = () => {
         >
           <Routes>
             <Route path="/" element={<StartGame />} />
-            <Route path="/play" element={<Game />} />
+            <Route path="/game" element={<Game />} />
           </Routes>
         </Container>
         <Footer />

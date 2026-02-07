@@ -2,11 +2,11 @@ import cors from 'cors';
 import express, { Application } from 'express';
 import { config } from './config.js';
 import { sessionMiddleware } from './middlewares/session.middleware.js';
-import { SessionRouter } from './routers/session.router.js';
+import { GameRouter } from './routers/game.router.js';
 
 export class App {
   public app: Application;
-  private sessionRouter = new SessionRouter();
+  private gameRouter = new GameRouter();
 
   constructor() {
     this.app = express();
@@ -30,6 +30,6 @@ export class App {
   }
 
   private initRouters(): void {
-    this.app.use('/api/session', this.sessionRouter.router);
+    this.app.use('/api/game', this.gameRouter.router);
   }
 }

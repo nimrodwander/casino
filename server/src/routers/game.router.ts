@@ -9,7 +9,7 @@ import { config } from '../config.js';
 import { GameHistoryRepositoryService } from '../services/gameHistoryRepository.service.js';
 import { SlotMachineService } from '../services/slotMachine.service.js';
 
-export class SessionRouter {
+export class GameRouter {
   public router: Router;
   private gameHistoryRepository: GameHistoryRepositoryService;
   private slotMachine = new SlotMachineService();
