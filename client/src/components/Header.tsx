@@ -1,10 +1,10 @@
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import { AppBar, Box, IconButton, Toolbar, Typography } from '@mui/material';
+import { observer } from 'mobx-react-lite';
 import React from 'react';
 import { Link, useMatch } from 'react-router-dom';
-import { observer } from 'mobx-react-lite';
-import { AppBar, Toolbar, Typography, IconButton, Box } from '@mui/material';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import { CreditDisplay } from './CreditDisplay';
 import { slotMachineStore } from '../stores/SlotMachineStore';
+import { CreditDisplay } from './CreditDisplay';
 
 export const Header: React.FC = observer(() => {
   const isPlayRoute = useMatch('/game');
@@ -26,9 +26,14 @@ export const Header: React.FC = observer(() => {
               <CreditDisplay credits={slotMachineStore.credits} />
             </Box>
             <Box sx={{ flexGrow: 1 }} />
-            <IconButton component={Link} to="/">
-              <AccountCircleIcon sx={{ fontSize: 32 }}/>
-            </IconButton>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                {slotMachineStore.playerId}
+              </Typography>
+              <IconButton>
+                <AccountCircleIcon sx={{ fontSize: 32 }}/>
+              </IconButton>
+            </Box>
           </>
         )}
       </Toolbar>
