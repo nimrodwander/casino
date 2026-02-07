@@ -10,7 +10,7 @@ import {
 import { NextFunction, Request, Response, Router } from 'express';
 import { DEFAULT_REEL_COUNT } from '../../../shared/src/constants.js';
 import { config } from '../config.js';
-import { AppError, NotFoundError } from '../errors/AppError.js';
+import { BadRequestError, NotFoundError } from '../errors/index.js';
 import { validationMiddleware } from '../middlewares/validation.middleware.js';
 import { GameHistoryRepositoryService } from '../services/gameHistoryRepository.service.js';
 import { SlotMachineService } from '../services/slotMachine.service.js';
@@ -63,7 +63,7 @@ export class GameRouter {
     }
 
     if (gameSession.credits < config.rollCost) {
-      throw new AppError(400, 'Not enough credits');
+      throw new BadRequestError('Not enough credits');
     }
 
     gameSession.credits -= config.rollCost;

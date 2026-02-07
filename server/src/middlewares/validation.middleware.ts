@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
 import type { ZodSchema } from 'zod';
-import { AppError } from '../errors/AppError.js';
+import { BadRequestError } from '../errors/index.js';
 
 export function validationMiddleware(schema: ZodSchema) {
   return (req: Request, _res: Response, next: NextFunction): void => {
@@ -8,7 +8,7 @@ export function validationMiddleware(schema: ZodSchema) {
 
     if (!result.success) {
       const message = result.error.issues[0].message;
-      next(new AppError(400, message));
+      next(new BadRequestError(message));
       return;
     }
 

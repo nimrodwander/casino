@@ -1,7 +1,7 @@
 import { errorResponseSchema } from '@casino/shared';
 import type { NextFunction, Request, Response } from 'express';
 import { ZodError } from 'zod';
-import { AppError } from '../errors/AppError.js';
+import { AppError } from '../errors/index.js';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function errorMiddleware(err: Error, req: Request, res: Response, next: NextFunction): void {
@@ -12,7 +12,7 @@ export function errorMiddleware(err: Error, req: Request, res: Response, next: N
     return;
   }
 
-  if (err instanceof AppError) {
+if (err instanceof AppError) {
     const response = errorResponseSchema.parse({ error: err.message });
     res.status(err.statusCode).json(response);  
     return;
