@@ -5,16 +5,19 @@ import type {
   CashOutResponse,
   ErrorResponse,
 } from '@casino/shared';
-import { GameSessionService } from '../services/gameSession.service.js';
+import { INITIAL_CREDITS, ROLL_COST } from '@casino/shared';
+import { SlotMachineService } from '../services/slotMachine.service.js';
 import { SessionRepositoryService } from '../services/sessionRepository.service.js';
 
 export class SessionRouter {
   public router: Router;
   private sessionRepository: SessionRepositoryService;
+  private slotMachine: SlotMachineService;
 
   constructor(sessionRepository?: SessionRepositoryService) {
     this.router = Router();
     this.sessionRepository = sessionRepository || new SessionRepositoryService();
+    this.slotMachine = new SlotMachineService();
     this.initializeRoutes();
   }
 
@@ -22,25 +25,6 @@ export class SessionRouter {
     this.router.post('/', this.createSession.bind(this));
     this.router.post('/roll', this.roll.bind(this));
     this.router.post('/cashout', this.cashOut.bind(this));
-  }
-
-  private getGameSession(req: Request): GameSessionService | null {
-    const sessionData = req.session.gameSession;
-    if (!sessionData) {
-      return null;
-    }
-    return new GameSessionService(
-      req.session.id,
-      sessionData.playerId,
-      sessionData.credits
-    );
-  }
-
-  private saveGameSession(req: Request, gameSession: GameSessionService): void {
-    req.session.gameSession = {
-      playerId: gameSession.playerId,
-      credits: gameSession.credits,
-    };
   }
 
   private createSession(req: Request, res: Response): void {
@@ -57,19 +41,21 @@ export class SessionRouter {
       return;
     }
 
-    const gameSession = new GameSessionService(req.session.id, playerId ?? '');
-    this.saveGameSession(req, gameSession);
+    req.session.gameSession = {
+      playerId: playerId ?? '',
+      credits: INITIAL_CREDITS,
+    };
 
     const response: CreateSessionResponse = {
       sessionId: req.session.id,
-      credits: gameSession.credits,
-      playerId: gameSession.playerId,
+      credits: INITIAL_CREDITS,
+      playerId: playerId ?? '',
     };
     res.status(201).json(response);
   }
 
   private roll(req: Request, res: Response): void {
-    const gameSession = this.getGameSession(req);
+    const gameSession = req.session.gameSession;
 
     if (!gameSession) {
       const error: ErrorResponse = { error: 'No active game session. Create a session first.' };
@@ -77,14 +63,18 @@ export class SessionRouter {
       return;
     }
 
-    if (!gameSession.canRoll()) {
+    if (gameSession.credits < ROLL_COST) {
       const error: ErrorResponse = { error: 'Not enough credits' };
       res.status(400).json(error);
       return;
     }
 
-    const result = gameSession.roll();
-    this.saveGameSession(req, gameSession);
+    gameSession.credits -= ROLL_COST;
+    const result = this.slotMachine.roll(gameSession.credits);
+
+    if (result.win) {
+      gameSession.credits += result.reward;
+    }
 
     const response: RollResponse = {
       symbols: result.symbols,
@@ -96,7 +86,7 @@ export class SessionRouter {
   }
 
   private async cashOut(req: Request, res: Response): Promise<void> {
-    const gameSession = this.getGameSession(req);
+    const gameSession = req.session.gameSession;
 
     if (!gameSession) {
       const error: ErrorResponse = { error: 'No active game session' };
@@ -104,7 +94,7 @@ export class SessionRouter {
       return;
     }
 
-    const finalCredits = gameSession.cashOut();
+    const finalCredits = gameSession.credits;
 
     // Persist to database
     await this.sessionRepository.persist(

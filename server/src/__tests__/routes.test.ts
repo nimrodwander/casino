@@ -6,7 +6,6 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { sessionMiddleware } from '../config/session.config.js';
 import { SessionEntity } from '../entities/Session.entity.js';
 import { SessionRouter } from '../routers/session.router.js';
-import { databaseService } from '../services/database.service.js';
 import { SessionRepositoryService } from '../services/sessionRepository.service.js';
 
 let testDataSource: DataSource;
@@ -30,8 +29,7 @@ beforeAll(async () => {
     entities: [SessionEntity],
   });
   await testDataSource.initialize();
-  databaseService.setDataSource(testDataSource);
-  sessionRepository = new SessionRepositoryService();
+  sessionRepository = new SessionRepositoryService(testDataSource.getRepository(SessionEntity));
 });
 
 afterAll(async () => {
