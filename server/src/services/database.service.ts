@@ -21,14 +21,6 @@ export class DatabaseService {
   public getSessionRepository(): Repository<SessionEntity> {
     return this.dataSource.getRepository(SessionEntity);
   }
-
-  public getDataSource(): DataSource {
-    return this.dataSource;
-  }
-
-  public setDataSource(ds: DataSource): void {
-    this.dataSource = ds;
-  }
 }
 
 export const databaseService = new DatabaseService();
