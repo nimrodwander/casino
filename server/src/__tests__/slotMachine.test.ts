@@ -15,7 +15,7 @@ describe('SlotMachineService', () => {
 
   describe('generateRoll', () => {
     it('should return an array of 3 symbols', () => {
-      const roll = slotMachine.generateRoll();
+      const roll = slotMachine.generateRoll(3);
       expect(roll).toHaveLength(3);
       roll.forEach((symbol) => {
         expect(ALL_SYMBOLS).toContain(symbol);
@@ -49,7 +49,7 @@ describe('SlotMachineService', () => {
 
   describe('roll', () => {
     it('should return a valid result with low credits (no cheat)', () => {
-      const result = slotMachine.roll(10);
+      const result = slotMachine.roll(10, 3);
       expect(result.symbols).toHaveLength(3);
       result.symbols.forEach((s) => expect(ALL_SYMBOLS).toContain(s));
       expect(typeof result.win).toBe('boolean');
@@ -64,7 +64,7 @@ describe('SlotMachineService', () => {
       const mockRandom = vi.spyOn(Math, 'random');
       mockRandom.mockReturnValue(0);
 
-      const result = slotMachine.roll(30);
+      const result = slotMachine.roll(30, 3);
       expect(result.symbols).toEqual(['C', 'C', 'C']);
       expect(result.win).toBe(true);
       expect(result.reward).toBe(10);
@@ -82,7 +82,7 @@ describe('SlotMachineService', () => {
         .mockReturnValueOnce(0.3)
         .mockReturnValueOnce(0.6);
 
-      const result = slotMachine.roll(50);
+      const result = slotMachine.roll(50, 3);
       expect(result.symbols).toEqual(['C', 'L', 'O']);
       expect(result.win).toBe(false);
       expect(result.reward).toBe(0);
@@ -96,7 +96,7 @@ describe('SlotMachineService', () => {
         .mockReturnValueOnce(0)
         .mockReturnValueOnce(0.5);
 
-      const result = slotMachine.roll(50);
+      const result = slotMachine.roll(50, 3);
       expect(result.symbols).toEqual(['C', 'C', 'C']);
       expect(result.win).toBe(true);
     });
@@ -112,7 +112,7 @@ describe('SlotMachineService', () => {
         .mockReturnValueOnce(0.3)
         .mockReturnValueOnce(0.6);
 
-      const result = slotMachine.roll(70);
+      const result = slotMachine.roll(70, 3);
       expect(result.symbols).toEqual(['C', 'L', 'O']);
       expect(result.win).toBe(false);
     });
@@ -124,7 +124,7 @@ describe('SlotMachineService', () => {
         .mockReturnValueOnce(0.25)
         .mockReturnValueOnce(0.5);
 
-      const result = slotMachine.roll(100);
+      const result = slotMachine.roll(100, 3);
       expect(result.win).toBe(false);
       expect(mockRandom).toHaveBeenCalledTimes(3);
     });

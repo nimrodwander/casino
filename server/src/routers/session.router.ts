@@ -70,7 +70,8 @@ export class SessionRouter {
     }
 
     gameSession.credits -= ROLL_COST;
-    const result = this.slotMachine.roll(gameSession.credits);
+    const reelCount = 3;
+    const result = this.slotMachine.roll(gameSession.credits, reelCount);
 
     if (result.win) {
       gameSession.credits += result.reward;

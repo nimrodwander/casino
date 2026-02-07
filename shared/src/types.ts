@@ -1,7 +1,5 @@
 export type SlotSymbol = 'C' | 'L' | 'O' | 'W';
 
-export type SymbolTriplet = [SlotSymbol, SlotSymbol, SlotSymbol];
-
 export const SYMBOL_REWARDS: Record<SlotSymbol, number> = {
   C: 10,
   L: 20,
@@ -40,7 +38,7 @@ export interface CreateSessionResponse {
 }
 
 export interface RollResponse {
-  symbols: SymbolTriplet;
+  symbols: SlotSymbol[];
   win: boolean;
   reward: number;
   credits: number;

@@ -1,12 +1,12 @@
 import { makeAutoObservable, runInAction } from 'mobx';
-import type { SymbolTriplet, RollResponse } from '@casino/shared';
+import type { SlotSymbol, RollResponse } from '@casino/shared';
 import { apiService } from '../services/api.service';
 
 export class SlotMachineStore {
   public sessionId: string | null = null;
   public playerId: string | null = null;
   public credits = 0;
-  public symbols: SymbolTriplet | null = null;
+  public symbols: SlotSymbol[] | null = null;
   public lastRoll: RollResponse | null = null;
 
   constructor() {

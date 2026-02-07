@@ -1,6 +1,5 @@
 import {
   type SlotSymbol,
-  type SymbolTriplet,
   ALL_SYMBOLS,
   SYMBOL_REWARDS,
   CHEAT_THRESHOLD_LOW,
@@ -10,7 +9,7 @@ import {
 } from '@casino/shared';
 
 export interface RollResult {
-  symbols: SymbolTriplet;
+  symbols: SlotSymbol[];
   win: boolean;
   reward: number;
 }
@@ -21,12 +20,12 @@ export class SlotMachineService {
     return ALL_SYMBOLS[index];
   }
 
-  public generateRoll(): SymbolTriplet {
-    return [this.randomSymbol(), this.randomSymbol(), this.randomSymbol()];
+  public generateRoll(reelCount: number): SlotSymbol[] {
+    return Array.from({ length: reelCount }, () => this.randomSymbol());
   }
 
-  public isWin(symbols: SymbolTriplet): boolean {
-    return symbols[0] === symbols[1] && symbols[1] === symbols[2];
+  public isWin(symbols: SlotSymbol[]): boolean {
+    return symbols.every((s) => s === symbols[0]);
   }
 
   public getReward(symbol: SlotSymbol): number {
@@ -43,14 +42,14 @@ export class SlotMachineService {
     return 0;
   }
 
-  private evaluateRoll(symbols: SymbolTriplet): RollResult {
+  private evaluateRoll(symbols: SlotSymbol[]): RollResult {
     const win = this.isWin(symbols);
     const reward = win ? this.getReward(symbols[0]) : 0;
     return { symbols, win, reward };
   }
 
-  public roll(currentCredits: number): RollResult {
-    const symbols = this.generateRoll();
+  public roll(currentCredits: number, reelCount: number): RollResult {
+    const symbols = this.generateRoll(reelCount);
     const result = this.evaluateRoll(symbols);
 
     if (!result.win) {
@@ -64,7 +63,7 @@ export class SlotMachineService {
 
     // Decide whether to re-roll (house always wins!)
     if (Math.random() < cheatChance) {
-      const rerolledSymbols = this.generateRoll();
+      const rerolledSymbols = this.generateRoll(reelCount);
       return this.evaluateRoll(rerolledSymbols);
     }
 

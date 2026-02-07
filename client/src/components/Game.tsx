@@ -10,7 +10,7 @@ import { slotMachineStore } from '../stores/SlotMachineStore';
 import { useReelReveal } from '../hooks/useReelReveal';
 
 export const Game: React.FC = observer(() => {
-  const REEL_STRIP_SIZE = 3;
+  const DEFAULT_REEL_COUNT = 3;
   const store = slotMachineStore;
   const navigate = useNavigate();
   const { revealedCount, spinning, startReveal, resetReveal } = useReelReveal<SlotSymbol>();
@@ -33,7 +33,7 @@ export const Game: React.FC = observer(() => {
   return (
     <Box sx={{ textAlign: 'center' }}>
       <ReelStrip
-          count={REEL_STRIP_SIZE}
+          count={store.symbols?.length ?? DEFAULT_REEL_COUNT}
           symbols={store.symbols}
           revealedCount={revealedCount}
           spinning={spinning}
