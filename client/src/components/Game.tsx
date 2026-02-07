@@ -5,7 +5,6 @@ import { runInAction } from 'mobx';
 import { Box, Button, Stack } from '@mui/material';
 import { ReelStrip } from './ReelStrip';
 import { CashOutButton } from './CashOutButton';
-import type { SlotSymbol } from '@casino/shared';
 import { slotMachineStore } from '../stores/SlotMachineStore';
 import { useReelReveal } from '../hooks/useReelReveal';
 
@@ -13,7 +12,7 @@ export const Game: React.FC = observer(() => {
   const DEFAULT_REEL_COUNT = 3;
   const store = slotMachineStore;
   const navigate = useNavigate();
-  const { revealedCount, spinning, startReveal, resetReveal } = useReelReveal<SlotSymbol>();
+  const { revealedCount, spinning, startReveal, resetReveal } = useReelReveal<string>();
 
   const handleRoll = async (): Promise<void> => {
     if (spinning) return;

@@ -1,11 +1,9 @@
 import React from 'react';
 import { Stack } from '@mui/material';
 import { Reel } from './Reel';
-import type { SlotSymbol } from '@casino/shared';
-
 interface ReelStripProps {
   count: number;
-  symbols: SlotSymbol[] | null;
+  symbols: string[] | null;
   revealedCount: number;
   spinning: boolean;
 }

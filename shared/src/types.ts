@@ -1,20 +1,9 @@
-export type SlotSymbol = 'C' | 'L' | 'O' | 'W';
-
-export const SYMBOL_REWARDS: Record<SlotSymbol, number> = {
-  C: 10,
-  L: 20,
-  O: 30,
-  W: 40,
+export const SYMBOLS: Record<string, number> = {
+  cherry: 10,
+  lemon: 20,
+  orange: 30,
+  watermelon: 40,
 };
-
-export const SYMBOL_NAMES: Record<SlotSymbol, string> = {
-  C: 'Cherry',
-  L: 'Lemon',
-  O: 'Orange',
-  W: 'Watermelon',
-};
-
-export const ALL_SYMBOLS: SlotSymbol[] = ['C', 'L', 'O', 'W'];
 
 // API request types
 export interface CreateSessionRequest {
@@ -29,7 +18,7 @@ export interface CreateSessionResponse {
 }
 
 export interface RollResponse {
-  symbols: SlotSymbol[];
+  symbols: string[];
   reward: number;
   credits: number;
 }

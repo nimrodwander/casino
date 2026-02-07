@@ -73,7 +73,7 @@ describe('SlotMachine', () => {
     vi.useFakeTimers();
     mockCreateSession.mockResolvedValue({ sessionId: 'test-id', credits: 10 });
     mockRoll.mockResolvedValue({
-      symbols: ['C', 'L', 'O'],
+      symbols: ['cherry', 'lemon', 'orange'],
       win: false,
       reward: 0,
       credits: 9,
@@ -120,7 +120,7 @@ describe('SlotMachine', () => {
     vi.useFakeTimers();
     mockCreateSession.mockResolvedValue({ sessionId: 'test-id', credits: 10 });
     mockRoll.mockResolvedValue({
-      symbols: ['C', 'C', 'C'],
+      symbols: ['cherry', 'cherry', 'cherry'],
       win: true,
       reward: 10,
       credits: 19,
