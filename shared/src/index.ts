@@ -5,5 +5,5 @@ export {
 export type {
   CashOutData, CreateSessionData, CreateSessionRequest,
   Response, RollData
-} from './schemas.js';
+} from './types.js';
 
