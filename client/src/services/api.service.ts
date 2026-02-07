@@ -22,18 +22,18 @@ class ApiService {
   }
 
   public async createSession(playerId: string): Promise<CreateSessionData> {
-    const { data } = await this.client.post<Response>('', { playerId });
-    return data.data as CreateSessionData;
+    const { data } = await this.client.post<Response<CreateSessionData>>('', { playerId });
+    return data.data;
   }
 
   public async roll(): Promise<RollData> {
-    const { data } = await this.client.post<Response>('/roll');
-    return data.data as RollData;
+    const { data } = await this.client.post<Response<RollData>>('/roll');
+    return data.data;
   }
 
   public async cashOut(): Promise<CashOutData> {
-    const { data } = await this.client.post<Response>('/cashout');
-    return data.data as CashOutData;
+    const { data } = await this.client.post<Response<CashOutData>>('/cashout');
+    return data.data;
   }
 }
 

@@ -37,4 +37,7 @@ export type CreateSessionRequest = z.infer<typeof createSessionRequestSchema>;
 export type CreateSessionData = z.infer<typeof createSessionDataSchema>;
 export type RollData = z.infer<typeof rollDataSchema>;
 export type CashOutData = z.infer<typeof cashOutDataSchema>;
-export type Response = z.infer<typeof responseSchema>;
+export type Response<T = unknown> = {
+  data: T;
+  message?: string;
+};
