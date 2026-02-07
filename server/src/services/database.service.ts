@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { DataSource, Repository } from 'typeorm';
-import { SessionEntity } from '../entities/Session.entity.js';
+import { GameHistoryEntity } from '../entities/gameHistory.entity.js';
 
 export class DatabaseService {
   private dataSource = new DataSource({
@@ -8,7 +8,7 @@ export class DatabaseService {
     database: process.env.DB_PATH || 'casino.db',
     synchronize: true,
     logging: false,
-    entities: [SessionEntity],
+    entities: [GameHistoryEntity],
   });
 
   public async initialize(): Promise<DataSource> {
@@ -18,8 +18,8 @@ export class DatabaseService {
     return this.dataSource;
   }
 
-  public getSessionRepository(): Repository<SessionEntity> {
-    return this.dataSource.getRepository(SessionEntity);
+  public getGameHistoryRepository(): Repository<GameHistoryEntity> {
+    return this.dataSource.getRepository(GameHistoryEntity);
   }
 }
 

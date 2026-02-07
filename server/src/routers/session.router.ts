@@ -7,16 +7,16 @@ import type {
 } from '@casino/shared';
 import { INITIAL_CREDITS, ROLL_COST } from '@casino/shared';
 import { SlotMachineService } from '../services/slotMachine.service.js';
-import { SessionRepositoryService } from '../services/sessionRepository.service.js';
+import { GameHistoryRepositoryService } from '../services/gameHistoryRepository.service.js';
 
 export class SessionRouter {
   public router: Router;
-  private sessionRepository: SessionRepositoryService;
+  private gameHistoryRepository: GameHistoryRepositoryService;
   private slotMachine: SlotMachineService;
 
-  constructor(sessionRepository?: SessionRepositoryService) {
+  constructor(gameHistoryRepository?: GameHistoryRepositoryService) {
     this.router = Router();
-    this.sessionRepository = sessionRepository || new SessionRepositoryService();
+    this.gameHistoryRepository = gameHistoryRepository || new GameHistoryRepositoryService();
     this.slotMachine = new SlotMachineService();
     this.initializeRoutes();
   }
@@ -97,7 +97,7 @@ export class SessionRouter {
     const finalCredits = gameSession.credits;
 
     // Persist to database
-    await this.sessionRepository.persist(
+    await this.gameHistoryRepository.persist(
       req.session.id,
       gameSession.playerId,
       finalCredits

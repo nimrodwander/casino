@@ -4,18 +4,18 @@ import request from 'supertest';
 import { DataSource } from 'typeorm';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { sessionMiddleware } from '../config/session.config.js';
-import { SessionEntity } from '../entities/Session.entity.js';
+import { GameHistoryEntity } from '../entities/gameHistory.entity.js';
 import { SessionRouter } from '../routers/session.router.js';
-import { SessionRepositoryService } from '../services/sessionRepository.service.js';
+import { GameHistoryRepositoryService } from '../services/gameHistoryRepository.service.js';
 
 let testDataSource: DataSource;
-let sessionRepository: SessionRepositoryService;
+let gameHistoryRepository: GameHistoryRepositoryService;
 
 function createApp(): express.Express {
   const app = express();
   app.use(express.json());
   app.use(sessionMiddleware);
-  const sessionRouter = new SessionRouter(sessionRepository);
+  const sessionRouter = new SessionRouter(gameHistoryRepository);
   app.use('/api/session', sessionRouter.router);
   return app;
 }
@@ -26,10 +26,10 @@ beforeAll(async () => {
     database: ':memory:',
     synchronize: true,
     logging: false,
-    entities: [SessionEntity],
+    entities: [GameHistoryEntity],
   });
   await testDataSource.initialize();
-  sessionRepository = new SessionRepositoryService(testDataSource.getRepository(SessionEntity));
+  gameHistoryRepository = new GameHistoryRepositoryService(testDataSource.getRepository(GameHistoryEntity));
 });
 
 afterAll(async () => {
@@ -42,7 +42,7 @@ describe('Session Routes', () => {
   let app: express.Express;
 
   beforeEach(async () => {
-    await sessionRepository.clear();
+    await gameHistoryRepository.clear();
     app = createApp();
   });
 
@@ -146,7 +146,7 @@ describe('Session Routes', () => {
 
       await agent.post('/api/session/cashout');
 
-      const persistedSession = await sessionRepository.findById(sessionId);
+      const persistedSession = await gameHistoryRepository.findById(sessionId);
       expect(persistedSession).not.toBeNull();
       expect(persistedSession!.playerId).toBe('persist-test');
       expect(persistedSession!.credits).toBe(10);
