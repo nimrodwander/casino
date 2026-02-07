@@ -1,5 +1,6 @@
-import type { CashOutResponse, CreateSessionResponse, RollResponse } from '@casino/shared';
+import type { CashOutResponse, CreateSessionResponse, ErrorResponse, RollResponse } from '@casino/shared';
 import axios, { type AxiosInstance } from 'axios';
+import { errorStore } from '../stores/ErrorStore';
 
 class ApiService {
   private client: AxiosInstance;
@@ -9,6 +10,15 @@ class ApiService {
       baseURL: '/api/game',
       withCredentials: true, // Required for cookie-based sessions
     });
+
+    this.client.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        const message = (error.response?.data as ErrorResponse)?.error || error.message;
+        errorStore.setError(message);
+        return Promise.reject(error);
+      },
+    );
   }
 
   public async createSession(playerId: string): Promise<CreateSessionResponse> {

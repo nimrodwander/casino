@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Container, Box } from '@mui/material';
+import { ErrorSnackbar } from './components/ErrorSnackbar';
 import { Header } from './components/Header';
 import { StartGame } from './components/StartGame';
 import { Game } from './components/Game';
@@ -27,6 +28,7 @@ export const App: React.FC = () => {
           </Routes>
         </Container>
         <Footer />
+        <ErrorSnackbar />
       </Box>
     </BrowserRouter>
   );

@@ -1,11 +1,11 @@
 import type {
   CashOutResponse,
   CreateSessionResponse,
-  ErrorResponse,
   RollResponse,
 } from '@casino/shared';
-import { Request, Response, Router } from 'express';
+import { NextFunction, Request, Response, Router } from 'express';
 import { config } from '../config.js';
+import { AppError } from '../errors/AppError.js';
 import { GameHistoryRepositoryService } from '../services/gameHistoryRepository.service.js';
 import { SlotMachineService } from '../services/slotMachine.service.js';
 
@@ -18,9 +18,15 @@ export class GameRouter {
     this.router = Router();
     this.gameHistoryRepository = gameHistoryRepository || new GameHistoryRepositoryService();
 
-    this.router.post('/', (req, res) => this.createSession(req, res));
-    this.router.post('/roll', (req, res) => this.roll(req, res));
-    this.router.post('/cashout', (req, res) => this.cashOut(req, res));
+    this.router.post('/', this.asyncHandler((req, res) => this.createSession(req, res)));
+    this.router.post('/roll', this.asyncHandler((req, res) => this.roll(req, res)));
+    this.router.post('/cashout', this.asyncHandler((req, res) => this.cashOut(req, res)));
+  }
+
+  private asyncHandler(fn: (req: Request, res: Response) => Promise<void> | void) {
+    return (req: Request, res: Response, next: NextFunction): void => {
+      Promise.resolve(fn(req, res)).catch(next);
+    };
   }
 
   private createSession(req: Request, res: Response): void {
@@ -47,13 +53,11 @@ export class GameRouter {
     const gameSession = req.session.gameSession;
 
     if (!gameSession) {
-      res.status(404).json({ error: 'No active game session. Create a session first.' } satisfies ErrorResponse);
-      return;
+      throw new AppError(404, 'No active game session. Create a session first.');
     }
 
     if (gameSession.credits < config.rollCost) {
-      res.status(400).json({ error: 'Not enough credits' } satisfies ErrorResponse);
-      return;
+      throw new AppError(400, 'Not enough credits');
     }
 
     gameSession.credits -= config.rollCost;
@@ -67,8 +71,7 @@ export class GameRouter {
     const gameSession = req.session.gameSession;
 
     if (!gameSession) {
-      res.status(404).json({ error: 'No active game session' } satisfies ErrorResponse);
-      return;
+      throw new AppError(404, 'No active game session');
     }
 
     const { credits, playerId } = gameSession;

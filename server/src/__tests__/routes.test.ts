@@ -4,6 +4,7 @@ import request from 'supertest';
 import { DataSource } from 'typeorm';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { GameHistoryEntity } from '../entities/gameHistory.entity.js';
+import { errorMiddleware } from '../middlewares/error.middleware.js';
 import { sessionMiddleware } from '../middlewares/session.middleware.js';
 import { GameRouter } from '../routers/game.router.js';
 import { GameHistoryRepositoryService } from '../services/gameHistoryRepository.service.js';
@@ -17,6 +18,7 @@ function createApp(): express.Express {
   app.use(sessionMiddleware);
   const gameRouter = new GameRouter(gameHistoryRepository);
   app.use('/api/game', gameRouter.router);
+  app.use(errorMiddleware);
   return app;
 }
 
