@@ -34,31 +34,24 @@ export class SlotMachineService {
     return Array.from({ length: reelCount }, () => this.generateRandomSymbol());
   }
 
-  private evaluate(symbols: SlotSymbol[]): RollResult {
-    const win = symbols.every((s) => s === symbols[0]);
-    const reward = win ? SYMBOL_REWARDS[symbols[0]] : 0;
-    return { symbols, win, reward };
+  private calculateReward(symbols: SlotSymbol[]): number {
+    const isWin = symbols.every((s) => s === symbols[0]);
+    return isWin ? SYMBOL_REWARDS[symbols[0]] : 0;
   }
 
   public roll(currentCredits: number, reelCount: number): RollResult {
-    const symbols = this.generateSymbolSequence(reelCount);
-    const result = this.evaluate(symbols);
+    let symbols = this.generateSymbolSequence(reelCount);
+    let reward = this.calculateReward(symbols);
 
-    if (!result.win) {
-      return result;
+    if (reward > 0) {
+      const cheatChance = this.getCheatChance(currentCredits);
+      
+      if (cheatChance > 0 && Math.random() < cheatChance) {
+        symbols = this.generateSymbolSequence(reelCount);
+        reward = this.calculateReward(symbols);
+      }
     }
 
-    const cheatChance = this.getCheatChance(currentCredits);
-    if (cheatChance === 0) {
-      return result;
-    }
-
-    // Decide whether to re-roll (house always wins!)
-    if (Math.random() < cheatChance) {
-      const rerolledSymbols = this.generateSymbolSequence(reelCount);
-      return this.evaluate(rerolledSymbols);
-    }
-
-    return result;
+    return { symbols, win: reward > 0, reward };
   }
 }
