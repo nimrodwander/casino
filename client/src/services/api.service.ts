@@ -1,4 +1,4 @@
-import type { CashOutResponse, CreateSessionResponse, Response, RollResponse } from '@casino/shared';
+import type { CashOutData, CreateSessionData, Response, RollData } from '@casino/shared';
 import axios, { type AxiosInstance } from 'axios';
 import { errorStore } from '../stores/ErrorStore';
 
@@ -21,19 +21,19 @@ class ApiService {
     );
   }
 
-  public async createSession(playerId: string): Promise<CreateSessionResponse> {
+  public async createSession(playerId: string): Promise<CreateSessionData> {
     const { data } = await this.client.post<Response>('', { playerId });
-    return data.data as CreateSessionResponse;
+    return data.data as CreateSessionData;
   }
 
-  public async roll(): Promise<RollResponse> {
+  public async roll(): Promise<RollData> {
     const { data } = await this.client.post<Response>('/roll');
-    return data.data as RollResponse;
+    return data.data as RollData;
   }
 
-  public async cashOut(): Promise<CashOutResponse> {
+  public async cashOut(): Promise<CashOutData> {
     const { data } = await this.client.post<Response>('/cashout');
-    return data.data as CashOutResponse;
+    return data.data as CashOutData;
   }
 }
 

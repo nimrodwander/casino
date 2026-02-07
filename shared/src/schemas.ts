@@ -9,22 +9,21 @@ export const rollRequestSchema = z.object({});
 
 export const cashOutRequestSchema = z.object({});
 
-// Response schemas
-export const createSessionResponseSchema = z.object({
+// Response data schemas
+export const createSessionDataSchema = z.object({
   sessionId: z.string(),
   credits: z.number(),
   playerId: z.string(),
 });
 
-export const rollResponseSchema = z.object({
+export const rollDataSchema = z.object({
   symbols: z.array(z.string()),
   reward: z.number(),
   credits: z.number(),
 });
 
-export const cashOutResponseSchema = z.object({
+export const cashOutDataSchema = z.object({
   credits: z.number(),
-  message: z.string(),
 });
 
 // Envelope schema
@@ -35,7 +34,7 @@ export const responseSchema = z.object({
 
 // Inferred types
 export type CreateSessionRequest = z.infer<typeof createSessionRequestSchema>;
-export type CreateSessionResponse = z.infer<typeof createSessionResponseSchema>;
-export type RollResponse = z.infer<typeof rollResponseSchema>;
-export type CashOutResponse = z.infer<typeof cashOutResponseSchema>;
+export type CreateSessionData = z.infer<typeof createSessionDataSchema>;
+export type RollData = z.infer<typeof rollDataSchema>;
+export type CashOutData = z.infer<typeof cashOutDataSchema>;
 export type Response = z.infer<typeof responseSchema>;

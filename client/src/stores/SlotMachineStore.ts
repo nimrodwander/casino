@@ -1,5 +1,5 @@
+import type { RollData } from '@casino/shared';
 import { makeAutoObservable, runInAction } from 'mobx';
-import type { RollResponse } from '@casino/shared';
 import { apiService } from '../services/api.service';
 
 export class SlotMachineStore {
@@ -7,7 +7,7 @@ export class SlotMachineStore {
   public playerId: string | null = null;
   public credits = 0;
   public symbols: string[] | null = null;
-  public lastRoll: RollResponse | null = null;
+  public lastRoll: RollData | null = null;
 
   constructor() {
     makeAutoObservable(this);
@@ -23,7 +23,7 @@ export class SlotMachineStore {
     });
   }
 
-  public async roll(): Promise<RollResponse | null> {
+  public async roll(): Promise<RollData | null> {
     if (!this.sessionId) return null;
 
     this.symbols = null;
@@ -36,7 +36,7 @@ export class SlotMachineStore {
     return result;
   }
 
-  public applyRollResult(result: RollResponse): void {
+  public applyRollResult(result: RollData): void {
     this.credits = result.credits;
   }
 

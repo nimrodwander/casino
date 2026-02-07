@@ -1,9 +1,9 @@
 export { SYMBOLS } from './constants.js';
 export {
-  cashOutRequestSchema, cashOutResponseSchema, createSessionRequestSchema, createSessionResponseSchema, responseSchema, rollRequestSchema, rollResponseSchema
+  cashOutDataSchema, cashOutRequestSchema, createSessionDataSchema, createSessionRequestSchema, responseSchema, rollDataSchema, rollRequestSchema
 } from './schemas.js';
 export type {
-  CashOutResponse, CreateSessionRequest,
-  CreateSessionResponse, Response, RollResponse
+  CashOutData, CreateSessionData, CreateSessionRequest,
+  Response, RollData
 } from './schemas.js';
 

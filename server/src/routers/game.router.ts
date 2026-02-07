@@ -1,11 +1,11 @@
 import type { CreateSessionRequest } from '@casino/shared';
 import {
+  cashOutDataSchema,
   cashOutRequestSchema,
-  cashOutResponseSchema,
+  createSessionDataSchema,
   createSessionRequestSchema,
-  createSessionResponseSchema,
+  rollDataSchema,
   rollRequestSchema,
-  rollResponseSchema,
 } from '@casino/shared';
 import { Request, Response, Router } from 'express';
 import { DEFAULT_REEL_COUNT } from '../../../shared/src/constants.js';
@@ -30,19 +30,19 @@ export class GameRouter {
     this.router.post(
       '/',
       requestValidationMiddleware(createSessionRequestSchema),
-      responseValidationMiddleware(createSessionResponseSchema),
+      responseValidationMiddleware(createSessionDataSchema),
       asyncHandler(this.createSession.bind(this))
     );
     this.router.post(
       '/roll',
       requestValidationMiddleware(rollRequestSchema),
-      responseValidationMiddleware(rollResponseSchema),
+      responseValidationMiddleware(rollDataSchema),
       asyncHandler(this.roll.bind(this))
     );
     this.router.post(
       '/cashout',
       requestValidationMiddleware(cashOutRequestSchema),
-      responseValidationMiddleware(cashOutResponseSchema),
+      responseValidationMiddleware(cashOutDataSchema),
       asyncHandler(this.cashOut.bind(this))
     );
   }
@@ -104,8 +104,7 @@ export class GameRouter {
 
     const data = {
       credits,
-      message: `Cashed out ${credits} credits. Thanks for playing!`,
     };
-    res.json({ data });
+    res.json({ data, message: `Cashed out ${credits} credits. Thanks for playing!` });
   }
 }
