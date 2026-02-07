@@ -12,8 +12,8 @@ import { DEFAULT_REEL_COUNT } from '../../../shared/src/constants.js';
 import { config } from '../config.js';
 import { BadRequestError } from '../errors/BadRequestError.js';
 import { NotFoundError } from '../errors/NotFoundError.js';
-import { asyncHandlerMiddleware } from '../middlewares/asyncHandler.middleware.js';
-import { validationMiddleware } from '../middlewares/validation.middleware.js';
+import { asyncHandlerMiddleware as asyncHandler } from '../middlewares/asyncHandler.middleware.js';
+import { requestValidationMiddleware } from '../middlewares/requestValidation.middleware.js';
 import { GameHistoryRepositoryService } from '../services/gameHistoryRepository.service.js';
 import { SlotMachineService } from '../services/slotMachine.service.js';
 
@@ -28,18 +28,18 @@ export class GameRouter {
 
     this.router.post(
       '/',
-      validationMiddleware(createSessionRequestSchema),
-      asyncHandlerMiddleware(this.createSession.bind(this))
+      requestValidationMiddleware(createSessionRequestSchema),
+      asyncHandler(this.createSession.bind(this))
     );
     this.router.post(
       '/roll',
-      validationMiddleware(rollRequestSchema),
-      asyncHandlerMiddleware(this.roll.bind(this))
+      requestValidationMiddleware(rollRequestSchema),
+      asyncHandler(this.roll.bind(this))
     );
     this.router.post(
       '/cashout',
-      validationMiddleware(cashOutRequestSchema),
-      asyncHandlerMiddleware(this.cashOut.bind(this))
+      requestValidationMiddleware(cashOutRequestSchema),
+      asyncHandler(this.cashOut.bind(this))
     );
   }
 
