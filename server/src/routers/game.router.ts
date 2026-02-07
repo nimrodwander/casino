@@ -25,9 +25,21 @@ export class GameRouter {
     this.router = Router();
     this.gameHistoryRepository = gameHistoryRepository || new GameHistoryRepositoryService();
 
-    this.router.post('/', validationMiddleware(createSessionRequestSchema), this.asyncHandler((req, res) => this.createSession(req, res)));
-    this.router.post('/roll', validationMiddleware(rollRequestSchema), this.asyncHandler((req, res) => this.roll(req, res)));
-    this.router.post('/cashout', validationMiddleware(cashOutRequestSchema), this.asyncHandler((req, res) => this.cashOut(req, res)));
+    this.router.post(
+      '/',
+      validationMiddleware(createSessionRequestSchema),
+      this.asyncHandler(this.createSession.bind(this))
+    );
+    this.router.post(
+      '/roll',
+      validationMiddleware(rollRequestSchema),
+      this.asyncHandler(this.roll.bind(this))
+    );
+    this.router.post(
+      '/cashout',
+      validationMiddleware(cashOutRequestSchema),
+      this.asyncHandler(this.cashOut.bind(this))
+    );
   }
 
   private asyncHandler(fn: (req: Request, res: Response) => Promise<void> | void) {
