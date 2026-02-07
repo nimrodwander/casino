@@ -12,110 +12,70 @@ import { SlotMachineService } from '../services/slotMachine.service.js';
 export class SessionRouter {
   public router: Router;
   private gameHistoryRepository: GameHistoryRepositoryService;
-  private slotMachine: SlotMachineService;
+  private slotMachine = new SlotMachineService();
 
   constructor(gameHistoryRepository?: GameHistoryRepositoryService) {
     this.router = Router();
     this.gameHistoryRepository = gameHistoryRepository || new GameHistoryRepositoryService();
-    this.slotMachine = new SlotMachineService();
-    this.initializeRoutes();
-  }
 
-  private initializeRoutes(): void {
-    this.router.post('/', this.createSession.bind(this));
-    this.router.post('/roll', this.roll.bind(this));
-    this.router.post('/cashout', this.cashOut.bind(this));
+    this.router.post('/', (req, res) => this.createSession(req, res));
+    this.router.post('/roll', (req, res) => this.roll(req, res));
+    this.router.post('/cashout', (req, res) => this.cashOut(req, res));
   }
 
   private createSession(req: Request, res: Response): void {
     const { playerId } = req.body as { playerId?: string };
+    const existing = req.session.gameSession;
 
-    // If session already exists, return it instead of error
-    if (req.session.gameSession) {
-      const response: CreateSessionResponse = {
-        sessionId: req.session.id,
-        credits: req.session.gameSession.credits,
-        playerId: req.session.gameSession.playerId,
+    if (!existing) {
+      req.session.gameSession = {
+        playerId: playerId ?? '',
+        credits: gameConfig.initialCredits,
       };
-      res.status(200).json(response);
-      return;
     }
 
-    req.session.gameSession = {
-      playerId: playerId ?? '',
-      credits: gameConfig.initialCredits,
-    };
-
+    const session = req.session.gameSession!;
     const response: CreateSessionResponse = {
       sessionId: req.session.id,
-      credits: gameConfig.initialCredits,
-      playerId: playerId ?? '',
+      credits: session.credits,
+      playerId: session.playerId,
     };
-    res.status(201).json(response);
+    res.status(existing ? 200 : 201).json(response);
   }
 
   private roll(req: Request, res: Response): void {
     const gameSession = req.session.gameSession;
 
     if (!gameSession) {
-      const error: ErrorResponse = { error: 'No active game session. Create a session first.' };
-      res.status(404).json(error);
+      res.status(404).json({ error: 'No active game session. Create a session first.' } satisfies ErrorResponse);
       return;
     }
 
     if (gameSession.credits < gameConfig.rollCost) {
-      const error: ErrorResponse = { error: 'Not enough credits' };
-      res.status(400).json(error);
+      res.status(400).json({ error: 'Not enough credits' } satisfies ErrorResponse);
       return;
     }
 
     gameSession.credits -= gameConfig.rollCost;
-    const reelCount = 3;
-    const result = this.slotMachine.roll(gameSession.credits, reelCount);
-
+    const result = this.slotMachine.roll(gameSession.credits, 3);
     gameSession.credits += result.reward;
 
-    const response: RollResponse = {
-      symbols: result.symbols,
-      reward: result.reward,
-      credits: gameSession.credits,
-    };
-    res.json(response);
+    res.json({ symbols: result.symbols, reward: result.reward, credits: gameSession.credits } satisfies RollResponse);
   }
 
   private async cashOut(req: Request, res: Response): Promise<void> {
     const gameSession = req.session.gameSession;
 
     if (!gameSession) {
-      const error: ErrorResponse = { error: 'No active game session' };
-      res.status(404).json(error);
+      res.status(404).json({ error: 'No active game session' } satisfies ErrorResponse);
       return;
     }
 
-    const finalCredits = gameSession.credits;
+    const { credits, playerId } = gameSession;
 
-    // Persist to database
-    await this.gameHistoryRepository.persist(
-      req.session.id,
-      gameSession.playerId,
-      finalCredits
-    );
+    await this.gameHistoryRepository.persist(req.session.id, playerId, credits);
+    req.session.destroy((err) => err && console.error('Error destroying session:', err));
 
-    // Destroy express session
-    req.session.destroy((err) => {
-      if (err) {
-        console.error('Error destroying session:', err);
-      }
-    });
-
-    const response: CashOutResponse = {
-      credits: finalCredits,
-      message: `Cashed out ${finalCredits} credits. Thanks for playing!`,
-    };
-    res.json(response);
+    res.json({ credits, message: `Cashed out ${credits} credits. Thanks for playing!` } satisfies CashOutResponse);
   }
 }
-
-// Default export for backwards compatibility
-const sessionRouter = new SessionRouter();
-export default sessionRouter.router;

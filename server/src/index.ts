@@ -3,8 +3,8 @@ import 'dotenv/config';
 import express from 'express';
 import 'reflect-metadata';
 import { sessionMiddleware } from './config/session.config.js';
-import sessionRouter from './routers/session.router.js';
 import { databaseService } from './services/database.service.js';
+import { SessionRouter } from './routers/session.router.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -16,7 +16,7 @@ app.use(cors({
 app.use(express.json());
 app.use(sessionMiddleware);
 
-app.use('/api/session', sessionRouter);
+app.use('/api/session', new SessionRouter().router);
 
 async function startServer(): Promise<void> {
   await databaseService.initialize();
