@@ -1,16 +1,6 @@
 import session from 'express-session';
 import { config } from '../config.js';
 
-// Extend express-session types
-declare module 'express-session' {
-  interface SessionData {
-    gameSession: {
-      playerId: string;
-      credits: number;
-    };
-  }
-}
-
 export const sessionMiddleware = session({
   secret: config.sessionSecret,
   resave: false,

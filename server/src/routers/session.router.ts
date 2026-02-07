@@ -34,11 +34,11 @@ export class SessionRouter {
       };
     }
 
-    const session = req.session.gameSession!;
+    const session = req.session.gameSession;
     const response: CreateSessionResponse = {
       sessionId: req.session.id,
-      credits: session.credits,
-      playerId: session.playerId,
+      credits: session?.credits || 0,
+      playerId: session?.playerId || '',
     };
     res.status(existing ? 200 : 201).json(response);
   }

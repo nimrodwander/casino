@@ -3,8 +3,8 @@ import 'reflect-metadata';
 import request from 'supertest';
 import { DataSource } from 'typeorm';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { sessionMiddleware } from '../config/session.config.js';
 import { GameHistoryEntity } from '../entities/gameHistory.entity.js';
+import { sessionMiddleware } from '../middlewares/session.middleware.js';
 import { SessionRouter } from '../routers/session.router.js';
 import { GameHistoryRepositoryService } from '../services/gameHistoryRepository.service.js';
 

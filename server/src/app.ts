@@ -1,7 +1,7 @@
 import cors from 'cors';
 import express, { Application } from 'express';
 import { config } from './config.js';
-import { sessionMiddleware } from './config/session.config.js';
+import { sessionMiddleware } from './middlewares/session.middleware.js';
 import { SessionRouter } from './routers/session.router.js';
 
 export class App {
