@@ -1,7 +1,6 @@
 import { SYMBOLS } from '@casino/shared';
-import { gameConfig } from '../config.js';
+import { config } from '../config.js';
 
-const allSymbols = Object.keys(SYMBOLS);
 
 export interface RollResult {
   symbols: string[];
@@ -9,19 +8,20 @@ export interface RollResult {
 }
 
 export class SlotMachineService {
+  private readonly allSymbols = Object.keys(SYMBOLS);
   private getRerollChance(credits: number): number {
-    if (credits > gameConfig.cheatThresholdHigh) {
-      return gameConfig.cheatChanceHigh;
+    if (credits > config.cheatThresholdHigh) {
+      return config.cheatChanceHigh;
     }
-    if (credits >= gameConfig.cheatThresholdLow) {
-      return gameConfig.cheatChanceLow;
+    if (credits >= config.cheatThresholdLow) {
+      return config.cheatChanceLow;
     }
     return 0;
   }
 
   private generateRandomSymbol(): string {
-    const index = Math.floor(Math.random() * allSymbols.length);
-    return allSymbols[index];
+    const index = Math.floor(Math.random() * this.allSymbols.length);
+    return this.allSymbols[index];
   }
 
   private generateSymbolSequence(reelCount: number): string[] {

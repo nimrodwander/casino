@@ -1,4 +1,5 @@
 import session from 'express-session';
+import { config } from '../config.js';
 
 // Extend express-session types
 declare module 'express-session' {
@@ -11,11 +12,11 @@ declare module 'express-session' {
 }
 
 export const sessionMiddleware = session({
-  secret: process.env.SESSION_SECRET || 'casino-secret-key-change-in-production',
+  secret: config.sessionSecret,
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: process.env.NODE_ENV === 'production',
+    secure: config.isProduction,
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
   },

@@ -5,7 +5,7 @@ import type {
   RollResponse,
 } from '@casino/shared';
 import { Request, Response, Router } from 'express';
-import { gameConfig } from '../config.js';
+import { config } from '../config.js';
 import { GameHistoryRepositoryService } from '../services/gameHistoryRepository.service.js';
 import { SlotMachineService } from '../services/slotMachine.service.js';
 
@@ -30,7 +30,7 @@ export class SessionRouter {
     if (!existing) {
       req.session.gameSession = {
         playerId: playerId ?? '',
-        credits: gameConfig.initialCredits,
+        credits: config.initialCredits,
       };
     }
 
@@ -51,12 +51,12 @@ export class SessionRouter {
       return;
     }
 
-    if (gameSession.credits < gameConfig.rollCost) {
+    if (gameSession.credits < config.rollCost) {
       res.status(400).json({ error: 'Not enough credits' } satisfies ErrorResponse);
       return;
     }
 
-    gameSession.credits -= gameConfig.rollCost;
+    gameSession.credits -= config.rollCost;
     const result = this.slotMachine.roll(gameSession.credits, 3);
     gameSession.credits += result.reward;
 

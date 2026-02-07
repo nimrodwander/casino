@@ -1,11 +1,12 @@
 import 'reflect-metadata';
 import { DataSource, Repository } from 'typeorm';
+import { config } from '../config.js';
 import { GameHistoryEntity } from '../entities/gameHistory.entity.js';
 
 export class DatabaseService {
   private dataSource = new DataSource({
     type: 'better-sqlite3',
-    database: process.env.DB_PATH || 'casino.db',
+    database: config.dbPath,
     synchronize: true,
     logging: false,
     entities: [GameHistoryEntity],
