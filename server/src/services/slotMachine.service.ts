@@ -2,11 +2,8 @@ import {
   type SlotSymbol,
   ALL_SYMBOLS,
   SYMBOL_REWARDS,
-  CHEAT_THRESHOLD_LOW,
-  CHEAT_THRESHOLD_HIGH,
-  CHEAT_CHANCE_LOW,
-  CHEAT_CHANCE_HIGH,
 } from '@casino/shared';
+import { gameConfig } from '../config.js';
 
 export interface RollResult {
   symbols: SlotSymbol[];
@@ -15,11 +12,11 @@ export interface RollResult {
 
 export class SlotMachineService {
   private getRerollChance(credits: number): number {
-    if (credits > CHEAT_THRESHOLD_HIGH) {
-      return CHEAT_CHANCE_HIGH;
+    if (credits > gameConfig.cheatThresholdHigh) {
+      return gameConfig.cheatChanceHigh;
     }
-    if (credits >= CHEAT_THRESHOLD_LOW) {
-      return CHEAT_CHANCE_LOW;
+    if (credits >= gameConfig.cheatThresholdLow) {
+      return gameConfig.cheatChanceLow;
     }
     return 0;
   }

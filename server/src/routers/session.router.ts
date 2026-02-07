@@ -1,13 +1,13 @@
-import { Router, Request, Response } from 'express';
 import type {
-  CreateSessionResponse,
-  RollResponse,
   CashOutResponse,
+  CreateSessionResponse,
   ErrorResponse,
+  RollResponse,
 } from '@casino/shared';
-import { INITIAL_CREDITS, ROLL_COST } from '@casino/shared';
-import { SlotMachineService } from '../services/slotMachine.service.js';
+import { Request, Response, Router } from 'express';
+import { gameConfig } from '../config.js';
 import { GameHistoryRepositoryService } from '../services/gameHistoryRepository.service.js';
+import { SlotMachineService } from '../services/slotMachine.service.js';
 
 export class SessionRouter {
   public router: Router;
@@ -43,12 +43,12 @@ export class SessionRouter {
 
     req.session.gameSession = {
       playerId: playerId ?? '',
-      credits: INITIAL_CREDITS,
+      credits: gameConfig.initialCredits,
     };
 
     const response: CreateSessionResponse = {
       sessionId: req.session.id,
-      credits: INITIAL_CREDITS,
+      credits: gameConfig.initialCredits,
       playerId: playerId ?? '',
     };
     res.status(201).json(response);
@@ -63,13 +63,13 @@ export class SessionRouter {
       return;
     }
 
-    if (gameSession.credits < ROLL_COST) {
+    if (gameSession.credits < gameConfig.rollCost) {
       const error: ErrorResponse = { error: 'Not enough credits' };
       res.status(400).json(error);
       return;
     }
 
-    gameSession.credits -= ROLL_COST;
+    gameSession.credits -= gameConfig.rollCost;
     const reelCount = 3;
     const result = this.slotMachine.roll(gameSession.credits, reelCount);
 

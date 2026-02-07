@@ -16,15 +16,6 @@ export const SYMBOL_NAMES: Record<SlotSymbol, string> = {
 
 export const ALL_SYMBOLS: SlotSymbol[] = ['C', 'L', 'O', 'W'];
 
-export const INITIAL_CREDITS = 10;
-export const ROLL_COST = 1;
-
-// Cheat thresholds
-export const CHEAT_THRESHOLD_LOW = 40;
-export const CHEAT_THRESHOLD_HIGH = 60;
-export const CHEAT_CHANCE_LOW = 0.3;
-export const CHEAT_CHANCE_HIGH = 0.6;
-
 // API request types
 export interface CreateSessionRequest {
   playerId: string;
