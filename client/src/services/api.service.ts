@@ -7,7 +7,7 @@ class ApiService {
 
   constructor() {
     this.client = axios.create({
-      baseURL: '/api/game',
+      baseURL: '/api/game/games',
       withCredentials: true, // Required for cookie-based sessions
     });
 
@@ -22,17 +22,17 @@ class ApiService {
   }
 
   public async createSession(playerId: string): Promise<CreateSessionData> {
-    const { data } = await this.client.post<Response<CreateSessionData>>('/games', { playerId });
+    const { data } = await this.client.post<Response<CreateSessionData>>('/current', { playerId });
     return data.data;
   }
 
   public async roll(): Promise<RollData> {
-    const { data } = await this.client.post<Response<RollData>>('/games/roll');
+    const { data } = await this.client.post<Response<RollData>>('/current/roll');
     return data.data;
   }
 
   public async cashOut(): Promise<CashOutData> {
-    const { data } = await this.client.delete<Response<CashOutData>>('/games');
+    const { data } = await this.client.post<Response<CashOutData>>('/current/persist');
     return data.data;
   }
 }
