@@ -59,9 +59,9 @@ Base URL: `/api/game`
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/games` | Create/resume session |
-| POST | `/games/roll` | Roll the slot machine |
-| DELETE | `/games` | Cash out |
+| POST | `/games/current` | Create/resume session |
+| POST | `/games/current/roll` | Roll the slot machine |
+| POST | `/games/current/persist` | Cash out and save to database |
 
 ## The House Edge
 
