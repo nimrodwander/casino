@@ -3,7 +3,7 @@ import { AppBar, Box, IconButton, Toolbar, Typography } from '@mui/material';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 import { Link, useMatch } from 'react-router-dom';
-import { slotMachineStore } from '../stores/SlotMachineStore';
+import { gameStore } from '../stores/GameStore';
 import { CreditDisplay } from './CreditDisplay';
 
 export const Header: React.FC = observer(() => {
@@ -23,12 +23,12 @@ export const Header: React.FC = observer(() => {
         {isPlayRoute && (
           <>
             <Box sx={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
-              <CreditDisplay credits={slotMachineStore.credits} />
+              <CreditDisplay credits={gameStore.credits} />
             </Box>
             <Box sx={{ flexGrow: 1 }} />
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                {slotMachineStore.playerId}
+                {gameStore.playerId}
               </Typography>
               <IconButton>
                 <AccountCircleIcon sx={{ fontSize: 32 }}/>

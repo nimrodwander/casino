@@ -16,13 +16,13 @@ import { NotFoundError } from '../errors/NotFoundError.js';
 import { asyncHandler } from '../middlewares/asyncHandler.middleware.js';
 import { requestValidationMiddleware } from '../middlewares/requestValidation.middleware.js';
 import { responseValidationMiddleware } from '../middlewares/responseValidation.middleware.js';
+import { GameService } from '../services/game.service.js';
 import { GameHistoryRepositoryService } from '../services/gameHistoryRepository.service.js';
-import { SlotMachineService } from '../services/slotMachine.service.js';
 
 export class GameRouter {
   public router: Router;
   private gameHistoryRepository = new GameHistoryRepositoryService();
-  private slotMachine = new SlotMachineService();
+  private game = new GameService();
 
   constructor() {
     this.router = Router();
@@ -80,7 +80,7 @@ export class GameRouter {
     }
 
     gameSession.credits -= config.rollCost;
-    const result = this.slotMachine.roll(gameSession.credits, DEFAULT_REEL_COUNT);
+    const result = this.game.roll(gameSession.credits, DEFAULT_REEL_COUNT);
     gameSession.credits += result.reward;
 
     res.json({

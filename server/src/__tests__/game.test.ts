@@ -1,6 +1,6 @@
-import { SYMBOLS } from '@casino/shared';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { GameService } from '../services/game.service.js';
+import { SYMBOLS } from '@casino/shared';
 
 const allSymbols = Object.keys(SYMBOLS);
 

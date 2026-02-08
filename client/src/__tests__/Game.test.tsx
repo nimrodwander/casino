@@ -16,7 +16,6 @@ vi.mock('../services/api.service', () => ({
 
 import { apiService } from '../services/api.service';
 
-const mockCreateSession = vi.mocked(apiService.createSession);
 const mockRoll = vi.mocked(apiService.roll);
 const mockCashOut = vi.mocked(apiService.cashOut);
 
@@ -81,7 +80,6 @@ describe('Game', () => {
     
     mockRoll.mockResolvedValue({
       symbols: ['cherry', 'lemon', 'orange'],
-      win: false,
       reward: 0,
       credits: 9,
     });
@@ -123,7 +121,6 @@ describe('Game', () => {
     
     mockRoll.mockResolvedValue({
       symbols: ['cherry', 'cherry', 'cherry'],
-      win: true,
       reward: 10,
       credits: 19,
     });
@@ -150,7 +147,6 @@ describe('Game', () => {
     
     mockCashOut.mockResolvedValue({
       credits: 10,
-      message: 'Cashed out 10 credits. Thanks for playing!',
     });
 
     renderWithTheme();

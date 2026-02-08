@@ -1,16 +1,16 @@
+import { Box, Button, Stack } from '@mui/material';
+import { runInAction } from 'mobx';
+import { observer } from 'mobx-react-lite';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { observer } from 'mobx-react-lite';
-import { runInAction } from 'mobx';
-import { Box, Button, Stack } from '@mui/material';
-import { ReelStrip } from './ReelStrip';
-import { CashOutButton } from './CashOutButton';
-import { slotMachineStore } from '../stores/SlotMachineStore';
-import { useReelReveal } from '../hooks/useReelReveal';
 import { DEFAULT_REEL_COUNT } from '../../../shared/src/constants';
+import { useReelReveal } from '../hooks/useReelReveal';
+import { gameStore } from '../stores/GameStore';
+import { CashOutButton } from './CashOutButton';
+import { ReelStrip } from './ReelStrip';
 
 export const Game: React.FC = observer(() => {
-  const store = slotMachineStore;
+  const store = gameStore;
   const navigate = useNavigate();
   const { revealedCount, spinning, startReveal, resetReveal } = useReelReveal<string>();
 

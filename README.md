@@ -15,12 +15,12 @@ A full-stack slot machine game built with React and Node.js. The house always wi
 casino/
 ├── shared/          # Shared TypeScript types and constants
 ├── server/          # Express API server
-│   ├── services/    # Session store + slot machine logic
+│   ├── services/    # Session store + game logic
 │   ├── routes/      # REST endpoints
 │   └── __tests__/   # Unit + integration tests
 └── client/          # React frontend
-    ├── components/  # UI components (SlotMachine, Reel, etc.)
-    ├── hooks/       # useSlotMachine game state hook
+    ├── components/  # UI components (Game, Reel, etc.)
+    ├── stores/      # MobX game state store
     ├── api/         # API client functions
     └── __tests__/   # Component tests
 ```
@@ -89,26 +89,26 @@ Created `@casino/shared` with all types, constants, and game configuration value
 
 Built three layers:
 1. **SessionStore** — in-memory `Map<string, Session>` with CRUD operations
-2. **SlotMachine** — pure functions for roll generation, win detection, reward lookup, and the cheat/re-roll mechanism
+2. **GameService** — pure functions for roll generation, win detection, reward lookup, and the cheat/re-roll mechanism
 3. **Routes** — Express handlers that validate input, orchestrate the services, and return typed responses
 
 The cheat logic is cleanly separated: `rollWithCheat(credits)` encapsulates the entire decision tree, making it easy to test in isolation.
 
-### Step 4: Server Tests (30 tests)
+### Step 4: Server Tests (24 tests)
 
-- **sessionStore.test.ts** (11 tests) — CRUD operations, edge cases (nonexistent/closed sessions)
-- **slotMachine.test.ts** (10 tests) — roll generation, win detection, rewards, cheat logic with mocked `Math.random`
-- **routes.test.ts** (9 tests) — integration tests via Supertest covering happy paths and error cases
+- **gameHistoryRepository.test.ts** (7 tests) — database operations, edge cases
+- **game.test.ts** (6 tests) — roll generation, win detection, rewards, cheat logic with mocked `Math.random`
+- **routes.test.ts** (11 tests) — integration tests via Supertest covering happy paths and error cases
 
 ### Step 5: Client Implementation
 
 Built the UI with a component hierarchy:
-- `SlotMachine` — orchestrates the game screen
+- `Game` — orchestrates the game screen
 - `Reel` — individual reel block with spinning animation
 - `CreditDisplay` — shows current credit balance
 - `CashOutButton` — triggers cash out
 
-The `useSlotMachine` hook manages all game state via `useReducer` and handles the staggered reveal timing (1s, 2s, 3s delays using `setTimeout`).
+The `gameStore` manages all game state via MobX and handles the staggered reveal timing (1s, 2s, 3s delays using `setTimeout`).
 
 ### Step 6: Client Tests (6 tests)
 

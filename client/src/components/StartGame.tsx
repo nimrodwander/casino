@@ -1,14 +1,14 @@
+import { Box, Button, TextField } from '@mui/material';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Button, TextField } from '@mui/material';
-import { slotMachineStore } from '../stores/SlotMachineStore';
+import { gameStore } from '../stores/GameStore';
 
 export const StartGame: React.FC = () => {
   const navigate = useNavigate();
   const [playerId, setPlayerId] = useState('');
 
   const handleStartGame = async (): Promise<void> => {
-    await slotMachineStore.startGame(playerId);
+    await gameStore.startGame(playerId);
     navigate('/game');
   };
 
