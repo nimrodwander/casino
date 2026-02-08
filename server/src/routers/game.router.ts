@@ -28,19 +28,19 @@ export class GameRouter {
     this.router = Router();
 
     this.router.post(
-      '/start-game',
+      '/games',
       requestValidationMiddleware(createSessionRequestSchema),
       responseValidationMiddleware(createSessionDataSchema),
       asyncHandler(this.createSession.bind(this))
     );
     this.router.post(
-      '/roll',
+      '/rolls',
       requestValidationMiddleware(rollRequestSchema),
       responseValidationMiddleware(rollDataSchema),
       asyncHandler(this.roll.bind(this))
     );
-    this.router.post(
-      '/cashout',
+    this.router.delete(
+      '/games',
       requestValidationMiddleware(cashOutRequestSchema),
       responseValidationMiddleware(cashOutDataSchema),
       asyncHandler(this.cashOut.bind(this))
