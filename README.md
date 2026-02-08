@@ -126,17 +126,18 @@ Constants are stored in the `@casino/shared` package and imported by both client
 ### Credit Deduction Timing
 Credits are deducted **before** the roll, not after. This ensures the house edge logic sees the post-payment balance, and prevents edge cases where players could spam rolls if deduction happened after. Matches real slot machine behavior.
 
-### Centralized Error Handling with Custom Error Classes
-Created typed error classes (`AppError`, `BadRequestError`, `NotFoundError`) that flow through a centralized error middleware. This eliminates try-catch blocks in every route handler via the `asyncHandler` wrapper, keeping route code clean and consistent.
+### Centralized Error Handling Architecture
+Implemented a comprehensive error handling strategy across both server and client:
+
+**Server-Side**: Custom error classes (`AppError`, `BadRequestError`, `NotFoundError`) flow through a centralized error middleware. The `asyncHandler` wrapper eliminates try-catch blocks in route handlers, automatically forwarding errors to the middleware. All errors are caught, transformed into consistent response format, and returned to the client with appropriate HTTP status codes.
+
+**Client-Side**: Axios interceptors provide a single point for handling all HTTP errors. The interceptor extracts error messages from failed responses and updates the global `errorStore` (MobX), which triggers UI notifications via Material-UI Snackbar. This eliminates repetitive error handling code in every API call and ensures consistent error display across the application.
 
 ### Dual Validation Strategy (Request + Response)
 Implemented both request and response validation using Zod schemas. Request validation catches bad input early, while response validation ensures the API contract is never violated—catching serialization bugs during development before they reach production.
 
 ### Custom React Hook for Staggered Animations
 Extracted reel reveal logic into a reusable `useReelReveal` hook. This separates animation timing logic from component rendering, making it testable, reusable, and allows easy tuning of reveal delays without touching component code.
-
-### Client-Side Error Handling with Axios Interceptors
-Used Axios interceptors to centralize API error handling. All HTTP errors flow through a single interceptor that extracts error messages and updates the global `errorStore`, eliminating repetitive error handling in every API call.
 
 ## Testing
 
