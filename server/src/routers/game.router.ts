@@ -10,6 +10,7 @@ import {
 import { Request, Response, Router } from 'express';
 import { DEFAULT_REEL_COUNT } from '../../../shared/src/constants.js';
 import { config } from '../config.js';
+import { AppError } from '../errors/AppError.js';
 import { BadRequestError } from '../errors/BadRequestError.js';
 import { NotFoundError } from '../errors/NotFoundError.js';
 import { asyncHandler } from '../middlewares/asyncHandler.middleware.js';
@@ -99,7 +100,9 @@ export class GameRouter {
     }
 
     await this.gameHistoryRepository.persist(req.session.id, gameSession.playerId, gameSession.credits);
-    req.session.destroy((err) => err && console.error('Error destroying session:', err));
+    req.session.destroy((err) => {
+      if (err) throw new AppError(500, 'Failed to destroy session');
+    });
 
     res.json({
       data: { credits: gameSession.credits },

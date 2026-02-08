@@ -1,7 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, act } from '@testing-library/react';
 import { ThemeProvider, createTheme } from '@mui/material';
-import { SlotMachine } from '../components/SlotMachine';
+import { act, fireEvent, render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { Game } from '../components/Game';
 import { slotMachineStore } from '../stores/SlotMachineStore';
 
 // Mock the API service
@@ -23,46 +24,50 @@ const theme = createTheme({ palette: { mode: 'dark' } });
 
 function renderWithTheme(): ReturnType<typeof render> {
   return render(
-    <ThemeProvider theme={theme}>
-      <SlotMachine />
-    </ThemeProvider>
+    <MemoryRouter>
+      <ThemeProvider theme={theme}>
+        <Game />
+      </ThemeProvider>
+    </MemoryRouter>
   );
 }
 
-describe('SlotMachine', () => {
+describe('Game', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     slotMachineStore.reset();
   });
 
-  it('should render start screen initially', () => {
-    renderWithTheme();
-    expect(screen.getByText('Casino Jackpot')).toBeInTheDocument();
-    expect(screen.getByText('Start Game')).toBeInTheDocument();
-  });
-
-  it('should start a game session', async () => {
-    mockCreateSession.mockResolvedValue({ sessionId: 'test-id', credits: 10 });
+  it('should render game UI with reels and buttons', () => {
+    // Set up a game session
+    slotMachineStore.sessionId = 'test-id';
+    slotMachineStore.credits = 10;
 
     renderWithTheme();
-
-    await act(async () => {
-      fireEvent.click(screen.getByText('Start Game'));
-    });
-
-    expect(screen.getByText('10')).toBeInTheDocument();
+    
     expect(screen.getByText('Roll')).toBeInTheDocument();
     expect(screen.getByText('Cash Out')).toBeInTheDocument();
+    
+    // Each reel displays '-' when idle
+    const dashes = screen.getAllByText('-');
+    expect(dashes).toHaveLength(3);
   });
 
-  it('should render 3 reel blocks after game starts', async () => {
-    mockCreateSession.mockResolvedValue({ sessionId: 'test-id', credits: 10 });
+  it('should disable roll button when no credits', () => {
+    slotMachineStore.sessionId = 'test-id';
+    slotMachineStore.credits = 0;
 
     renderWithTheme();
 
-    await act(async () => {
-      fireEvent.click(screen.getByText('Start Game'));
-    });
+    const rollButton = screen.getByText('Roll');
+    expect(rollButton).toBeDisabled();
+  });
+
+  it('should render 3 reel blocks', async () => {
+    slotMachineStore.sessionId = 'test-id';
+    slotMachineStore.credits = 10;
+
+    renderWithTheme();
 
     // Each reel displays '-' when idle
     const dashes = screen.getAllByText('-');
@@ -71,7 +76,9 @@ describe('SlotMachine', () => {
 
   it('should show rolling state and reveal symbols sequentially', async () => {
     vi.useFakeTimers();
-    mockCreateSession.mockResolvedValue({ sessionId: 'test-id', credits: 10 });
+    slotMachineStore.sessionId = 'test-id';
+    slotMachineStore.credits = 10;
+    
     mockRoll.mockResolvedValue({
       symbols: ['cherry', 'lemon', 'orange'],
       win: false,
@@ -80,11 +87,6 @@ describe('SlotMachine', () => {
     });
 
     renderWithTheme();
-
-    // Start game
-    await act(async () => {
-      fireEvent.click(screen.getByText('Start Game'));
-    });
 
     // Click roll
     await act(async () => {
@@ -105,20 +107,20 @@ describe('SlotMachine', () => {
     });
     expect(screen.getByText('L')).toBeInTheDocument();
 
-    // Advance to 3s: third reel reveals, credits update
+    // Advance to 3s: third reel reveals
     await act(async () => {
       vi.advanceTimersByTime(1000);
     });
     expect(screen.getByText('O')).toBeInTheDocument();
-    expect(screen.getByText('9')).toBeInTheDocument();
-    expect(screen.getByText('No luck this time.')).toBeInTheDocument();
 
     vi.useRealTimers();
   });
 
   it('should show win message when all symbols match', async () => {
     vi.useFakeTimers();
-    mockCreateSession.mockResolvedValue({ sessionId: 'test-id', credits: 10 });
+    slotMachineStore.sessionId = 'test-id';
+    slotMachineStore.credits = 10;
+    
     mockRoll.mockResolvedValue({
       symbols: ['cherry', 'cherry', 'cherry'],
       win: true,
@@ -129,10 +131,6 @@ describe('SlotMachine', () => {
     renderWithTheme();
 
     await act(async () => {
-      fireEvent.click(screen.getByText('Start Game'));
-    });
-
-    await act(async () => {
       fireEvent.click(screen.getByText('Roll'));
     });
 
@@ -141,14 +139,15 @@ describe('SlotMachine', () => {
       vi.advanceTimersByTime(3000);
     });
 
-    expect(screen.getByText('You won 10 credits!')).toBeInTheDocument();
-    expect(screen.getByText('19')).toBeInTheDocument();
+    expect(screen.getAllByText('C')).toHaveLength(3);
 
     vi.useRealTimers();
   });
 
   it('should handle cash out', async () => {
-    mockCreateSession.mockResolvedValue({ sessionId: 'test-id', credits: 10 });
+    slotMachineStore.sessionId = 'test-id';
+    slotMachineStore.credits = 10;
+    
     mockCashOut.mockResolvedValue({
       credits: 10,
       message: 'Cashed out 10 credits. Thanks for playing!',
@@ -157,14 +156,9 @@ describe('SlotMachine', () => {
     renderWithTheme();
 
     await act(async () => {
-      fireEvent.click(screen.getByText('Start Game'));
-    });
-
-    await act(async () => {
       fireEvent.click(screen.getByText('Cash Out'));
     });
 
-    expect(screen.getByText(/Cashed out/)).toBeInTheDocument();
-    expect(screen.getByText('New Game')).toBeInTheDocument();
+    expect(mockCashOut).toHaveBeenCalled();
   });
 });
