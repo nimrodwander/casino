@@ -6,3 +6,5 @@ export const SYMBOLS: Record<string, number> = {
 };
 
 export const DEFAULT_REEL_COUNT = 3;
+
+export const DEFAULT_PLAYER_NAME = 'Player';
