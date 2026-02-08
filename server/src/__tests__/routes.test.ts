@@ -1,12 +1,13 @@
 import express from 'express';
 import 'reflect-metadata';
 import request from 'supertest';
-import { DataSource } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { GameHistoryEntity } from '../entities/gameHistory.entity.js';
 import { errorMiddleware } from '../middlewares/error.middleware.js';
 import { sessionMiddleware } from '../middlewares/session.middleware.js';
 import { GameRouter } from '../routers/game.router.js';
+import { databaseService } from '../services/database.service.js';
 import { GameHistoryRepositoryService } from '../services/gameHistoryRepository.service.js';
 
 let testDataSource: DataSource;
@@ -16,7 +17,7 @@ function createApp(): express.Express {
   const app = express();
   app.use(express.json());
   app.use(sessionMiddleware);
-  const gameRouter = new GameRouter(gameHistoryRepository);
+  const gameRouter = new GameRouter();
   app.use('/api/game', gameRouter.router);
   app.use(errorMiddleware);
   return app;
@@ -31,7 +32,11 @@ beforeAll(async () => {
     entities: [GameHistoryEntity],
   });
   await testDataSource.initialize();
-  gameHistoryRepository = new GameHistoryRepositoryService(testDataSource.getRepository(GameHistoryEntity));
+
+  // Override databaseService to use test database
+  databaseService.getGameHistoryRepository = (): Repository<GameHistoryEntity> =>
+    testDataSource.getRepository(GameHistoryEntity);
+  gameHistoryRepository = new GameHistoryRepositoryService();
 });
 
 afterAll(async () => {

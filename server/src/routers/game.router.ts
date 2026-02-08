@@ -20,12 +20,11 @@ import { SlotMachineService } from '../services/slotMachine.service.js';
 
 export class GameRouter {
   public router: Router;
-  private gameHistoryRepository: GameHistoryRepositoryService;
+  private gameHistoryRepository = new GameHistoryRepositoryService();
   private slotMachine = new SlotMachineService();
 
-  constructor(gameHistoryRepository?: GameHistoryRepositoryService) {
+  constructor() {
     this.router = Router();
-    this.gameHistoryRepository = gameHistoryRepository || new GameHistoryRepositoryService();
 
     this.router.post(
       '/',

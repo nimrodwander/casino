@@ -3,19 +3,8 @@ import { GameHistoryEntity } from '../entities/gameHistory.entity.js';
 import { databaseService } from './database.service.js';
 
 export class GameHistoryRepositoryService {
-  private _repo: Repository<GameHistoryEntity> | null = null;
-
-  constructor(repo?: Repository<GameHistoryEntity>) {
-    if (repo) {
-      this._repo = repo;
-    }
-  }
-
   private get repo(): Repository<GameHistoryEntity> {
-    if (!this._repo) {
-      this._repo = databaseService.getGameHistoryRepository();
-    }
-    return this._repo;
+    return databaseService.getGameHistoryRepository();
   }
 
   public async persist(

@@ -1,7 +1,8 @@
 import 'reflect-metadata';
-import { DataSource } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { GameHistoryEntity } from '../entities/gameHistory.entity.js';
+import { databaseService } from '../services/database.service.js';
 import { GameHistoryRepositoryService } from '../services/gameHistoryRepository.service.js';
 
 let testDataSource: DataSource;
@@ -16,7 +17,11 @@ beforeAll(async () => {
     entities: [GameHistoryEntity],
   });
   await testDataSource.initialize();
-  gameHistoryRepository = new GameHistoryRepositoryService(testDataSource.getRepository(GameHistoryEntity));
+
+  // Override databaseService to use test database
+  databaseService.getGameHistoryRepository = (): Repository<GameHistoryEntity> =>
+    testDataSource.getRepository(GameHistoryEntity);
+  gameHistoryRepository = new GameHistoryRepositoryService();
 });
 
 afterAll(async () => {
