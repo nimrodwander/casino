@@ -138,13 +138,3 @@ Implemented both request and response validation using Zod schemas. Request vali
 
 ### Custom React Hook for Staggered Animations
 Extracted reel reveal logic into a reusable `useReelReveal` hook. This separates animation timing logic from component rendering, making it testable, reusable, and allows easy tuning of reveal delays without touching component code.
-
-## Testing
-
-Run tests with `npm test` or:
-- `npm run test:server` - Server tests only
-- `npm run test:client` - Client tests only
-
-## License
-
-MIT
