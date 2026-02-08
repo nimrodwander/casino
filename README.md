@@ -108,6 +108,9 @@ DB_PATH=casino.db
 ### Single Game Session per Player
 Modeled after real-world casino behavior where a player finishes one game before moving to another. Each session maintains one active game, and players must cash out before starting a new game.
 
+### Session ID as Primary Key for Game History
+Used the session ID as the primary key in the database rather than player ID. This prevents multiple active sessions per player (enforced by session cookies) while still allowing historical tracking. When a player cashes out, the session ID + player ID + credits are persisted to the database, enabling session history tracking per player without allowing concurrent sessions.
+
 ### Express-Session over Redis
 Chose in-memory Express sessions for simplicity and zero infrastructure setup. While Redis is better for horizontal scaling, it wasn't a requirement and would add unnecessary complexity. For production scaling, migrating to Redis is straightforward.
 
