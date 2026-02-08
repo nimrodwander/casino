@@ -4,8 +4,8 @@ import { observer } from 'mobx-react-lite';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DEFAULT_REEL_COUNT } from '../../../shared/src/constants';
-import { useReelReveal } from '../hooks/useReelReveal';
-import { gameStore } from '../stores/GameStore';
+import { useReelReveal } from '../hooks/useReelReveal.hook';
+import { gameStore } from '../stores/game.store';
 import { ReelStrip } from './ReelStrip';
 
 export const Game: React.FC = observer(() => {

@@ -1,7 +1,7 @@
-import React from 'react';
-import { Paper, Typography } from '@mui/material';
 import { SYMBOLS } from '@casino/shared';
-import { useSpinAnimation } from '../hooks/useSpinAnimation';
+import { Paper, Typography } from '@mui/material';
+import React from 'react';
+import { useSpinAnimation } from '../hooks/useSpinAnimation.hook';
 
 interface ReelProps {
   symbol: string | null;
@@ -12,13 +12,25 @@ interface ReelProps {
 const spinChars = Object.keys(SYMBOLS).map((s) => s[0].toUpperCase());
 
 export const Reel: React.FC<ReelProps> = ({ symbol, revealed, spinning }) => {
-  const spinChar = useSpinAnimation(spinning && !revealed, { spinChars });
-  const displayChar = revealed && symbol ? symbol[0].toUpperCase() : spinning ? spinChar : '-';
-  const title = revealed && symbol ? symbol.charAt(0).toUpperCase() + symbol.slice(1) : undefined;
+  const active = spinning && !revealed;
+  const spinChar = useSpinAnimation(active, { spinChars });
+  
+  const getDisplayChar = (): string => {
+    if (revealed && symbol) return symbol[0].toUpperCase();
+    if (spinning) return spinChar;
+    return '-';
+  };
+
+  const getTitle = (): string => {
+    if (revealed && symbol) {
+      return symbol.charAt(0).toUpperCase() + symbol.slice(1);
+    }
+    return '';
+  };
 
   return (
     <Paper
-      title={title}
+      title={getTitle()}
       sx={{
         width: 80,
         height: 80,
@@ -28,7 +40,7 @@ export const Reel: React.FC<ReelProps> = ({ symbol, revealed, spinning }) => {
       }}
     >
       <Typography variant="h4">
-        {displayChar}
+        {getDisplayChar()}
       </Typography>
     </Paper>
   );

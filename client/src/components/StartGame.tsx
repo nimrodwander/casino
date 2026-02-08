@@ -1,7 +1,7 @@
 import { Box, Button, TextField } from '@mui/material';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { gameStore } from '../stores/GameStore';
+import { gameStore } from '../stores/game.store';
 
 export const StartGame: React.FC = () => {
   const navigate = useNavigate();

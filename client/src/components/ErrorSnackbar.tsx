@@ -1,7 +1,7 @@
-import React from 'react';
-import { observer } from 'mobx-react-lite';
 import { Alert, Snackbar } from '@mui/material';
-import { errorStore } from '../stores/ErrorStore';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import { errorStore } from '../stores/error.store';
 
 export const ErrorSnackbar: React.FC = observer(() => {
   return (

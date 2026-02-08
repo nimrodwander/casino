@@ -1,6 +1,6 @@
 import type { CashOutData, CreateSessionData, Response, RollData } from '@casino/shared';
 import axios, { type AxiosInstance } from 'axios';
-import { errorStore } from '../stores/ErrorStore';
+import { errorStore } from '../stores/error.store';
 
 class ApiService {
   private client: AxiosInstance;

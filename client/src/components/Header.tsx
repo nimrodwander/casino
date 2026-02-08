@@ -3,7 +3,7 @@ import { AppBar, Box, IconButton, Toolbar, Typography } from '@mui/material';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 import { Link, useMatch } from 'react-router-dom';
-import { gameStore } from '../stores/GameStore';
+import { gameStore } from '../stores/game.store';
 import { CreditDisplay } from './CreditDisplay';
 
 export const Header: React.FC = observer(() => {
