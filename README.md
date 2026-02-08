@@ -121,7 +121,7 @@ Selected SQLite (`casino.db`) for simplicity and no external database setup requ
 The reel count is configurable via `DEFAULT_REEL_COUNT` constant in the shared package. If requirements change (e.g., 4 or 5 reels instead of 3), it's a single constant change rather than refactoring the entire codebase.
 
 ### Shared Constants Strategy
-Constants are stored in the `@casino/shared` package and imported by both client and server. This ensures consistency across the stack. Runtime configuration (game rules, thresholds) uses environment variables, while compile-time constants (symbols, reel count) are in the shared package.
+Constants are stored in the `@casino/shared` package and imported by both client and server. This ensures consistency across the stack. Symbol rewards could have been stored in the database, but they're true constants (not configurable weights), so keeping them in code is simpler and more performant. Runtime configuration (game rules, thresholds) uses environment variables, while compile-time constants (symbols, reel count) live in the shared package.
 
 ### Credit Deduction Timing
 Credits are deducted **before** the roll, not after. This ensures the house edge logic sees the post-payment balance, and prevents edge cases where players could spam rolls if deduction happened after. Matches real slot machine behavior.
@@ -136,5 +136,9 @@ Implemented a comprehensive error handling strategy across both server and clien
 ### Dual Validation Strategy (Request + Response)
 Implemented both request and response validation using Zod schemas. Request validation catches bad input early, while response validation ensures the API contract is never violated—catching serialization bugs during development before they reach production.
 
-### Custom React Hook for Staggered Animations
-Extracted reel reveal logic into a reusable `useReelReveal` hook. This separates animation timing logic from component rendering, making it testable, reusable, and allows easy tuning of reveal delays without touching component code.
+### Custom React Hooks for Animation
+Created two specialized hooks for slot machine animations:
+- **`useReelReveal`**: Manages staggered reveal timing (1s, 2s, 3s) and completion callbacks
+- **`useSpinAnimation`**: Handles spinning state with cycling characters and configurable intervals
+
+This separates animation logic from rendering, making both testable, reusable, and easily configurable.
