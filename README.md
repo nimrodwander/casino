@@ -103,6 +103,38 @@ DB_PATH=casino.db
 - Staggered reel reveal animations (1s, 2s, 3s)
 - Axios for API calls with session cookies
 
+## Design Decisions
+
+### Single Game Session per Player
+Modeled after real-world casino behavior where a player finishes one game before moving to another. Each session maintains one active game, and players must cash out before starting a new game.
+
+### Express-Session over Redis
+Chose in-memory Express sessions for simplicity and zero infrastructure setup. While Redis is better for horizontal scaling, it wasn't a requirement and would add unnecessary complexity. For production scaling, migrating to Redis is straightforward.
+
+### SQLite over PostgreSQL/MySQL
+Selected SQLite (`casino.db`) for simplicity and no external database setup required. TypeORM abstracts the database layer, making it easy to migrate to PostgreSQL or MySQL for production without code changes.
+
+### Dynamic Reel Count
+The reel count is configurable via `DEFAULT_REEL_COUNT` constant in the shared package. If requirements change (e.g., 4 or 5 reels instead of 3), it's a single constant change rather than refactoring the entire codebase.
+
+### Shared Constants Strategy
+Constants are stored in the `@casino/shared` package and imported by both client and server. This ensures consistency across the stack. Runtime configuration (game rules, thresholds) uses environment variables, while compile-time constants (symbols, reel count) are in the shared package.
+
+### Credit Deduction Timing
+Credits are deducted **before** the roll, not after. This ensures the house edge logic sees the post-payment balance, and prevents edge cases where players could spam rolls if deduction happened after. Matches real slot machine behavior.
+
+### Centralized Error Handling with Custom Error Classes
+Created typed error classes (`AppError`, `BadRequestError`, `NotFoundError`) that flow through a centralized error middleware. This eliminates try-catch blocks in every route handler via the `asyncHandler` wrapper, keeping route code clean and consistent.
+
+### Dual Validation Strategy (Request + Response)
+Implemented both request and response validation using Zod schemas. Request validation catches bad input early, while response validation ensures the API contract is never violated—catching serialization bugs during development before they reach production.
+
+### Custom React Hook for Staggered Animations
+Extracted reel reveal logic into a reusable `useReelReveal` hook. This separates animation timing logic from component rendering, making it testable, reusable, and allows easy tuning of reveal delays without touching component code.
+
+### Client-Side Error Handling with Axios Interceptors
+Used Axios interceptors to centralize API error handling. All HTTP errors flow through a single interceptor that extracts error messages and updates the global `errorStore`, eliminating repetitive error handling in every API call.
+
 ## Testing
 
 Run tests with `npm test` or:
