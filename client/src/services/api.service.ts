@@ -27,7 +27,7 @@ class ApiService {
   }
 
   public async roll(): Promise<RollData> {
-    const { data } = await this.client.post<Response<RollData>>('/rolls');
+    const { data } = await this.client.post<Response<RollData>>('/games/roll');
     return data.data;
   }
 

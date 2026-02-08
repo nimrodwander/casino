@@ -34,7 +34,7 @@ export class GameRouter {
       asyncHandler(this.createSession.bind(this))
     );
     this.router.post(
-      '/rolls',
+      '/games/roll',
       requestValidationMiddleware(rollRequestSchema),
       responseValidationMiddleware(rollDataSchema),
       asyncHandler(this.roll.bind(this))
