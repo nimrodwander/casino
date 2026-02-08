@@ -1,13 +1,13 @@
 import { z } from 'zod';
 import {
   cashOutDataSchema,
-  createSessionDataSchema,
-  createSessionRequestSchema,
   rollDataSchema,
+  startGameDataSchema,
+  startGameRequestSchema,
 } from './schemas.js';
 
 // Requests
-export type CreateSessionRequest = z.infer<typeof createSessionRequestSchema>;
+export type CreateSessionRequest = z.infer<typeof startGameRequestSchema>;
 
 // Response generic schema
 export type Response<T = unknown> = {
@@ -16,6 +16,6 @@ export type Response<T = unknown> = {
 };
 
 // Responses enveloped data
-export type CreateSessionData = z.infer<typeof createSessionDataSchema>;
+export type CreateSessionData = z.infer<typeof startGameDataSchema>;
 export type RollData = z.infer<typeof rollDataSchema>;
 export type CashOutData = z.infer<typeof cashOutDataSchema>;

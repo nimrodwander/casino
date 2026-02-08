@@ -22,7 +22,7 @@ class ApiService {
   }
 
   public async createSession(playerId: string): Promise<CreateSessionData> {
-    const { data } = await this.client.post<Response<CreateSessionData>>('', { playerId });
+    const { data } = await this.client.post<Response<CreateSessionData>>('/start-game', { playerId });
     return data.data;
   }
 

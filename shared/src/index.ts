@@ -1,6 +1,6 @@
 export { SYMBOLS } from './constants.js';
 export {
-  cashOutDataSchema, cashOutRequestSchema, createSessionDataSchema, createSessionRequestSchema, responseSchema, rollDataSchema, rollRequestSchema
+  cashOutDataSchema, cashOutRequestSchema, startGameDataSchema as createSessionDataSchema, startGameRequestSchema as createSessionRequestSchema, responseSchema, rollDataSchema, rollRequestSchema
 } from './schemas.js';
 export type {
   CashOutData, CreateSessionData, CreateSessionRequest,

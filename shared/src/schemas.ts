@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 // Request schemas
-export const createSessionRequestSchema = z.object({
+export const startGameRequestSchema = z.object({
   playerId: z.string().min(1, 'Player ID is required'),
 });
 
@@ -10,7 +10,7 @@ export const rollRequestSchema = z.object({});
 export const cashOutRequestSchema = z.object({});
 
 // Response data schemas
-export const createSessionDataSchema = z.object({
+export const startGameDataSchema = z.object({
   sessionId: z.string(),
   credits: z.number(),
   playerId: z.string(),

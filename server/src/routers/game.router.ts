@@ -28,7 +28,7 @@ export class GameRouter {
     this.router = Router();
 
     this.router.post(
-      '/',
+      '/start-game',
       requestValidationMiddleware(createSessionRequestSchema),
       responseValidationMiddleware(createSessionDataSchema),
       asyncHandler(this.createSession.bind(this))
