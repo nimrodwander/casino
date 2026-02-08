@@ -1,7 +1,7 @@
 import { Box, Button, Stack } from '@mui/material';
 import { runInAction } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DEFAULT_REEL_COUNT } from '../../../shared/src/constants';
 import { useReelReveal } from '../hooks/useReelReveal.hook';
@@ -12,6 +12,12 @@ export const Game: React.FC = observer(() => {
   const store = gameStore;
   const navigate = useNavigate();
   const { revealedCount, spinning, startReveal, resetReveal } = useReelReveal<string>();
+
+  useEffect(() => {
+    if (!store.sessionId) {
+      navigate('/', { replace: true });
+    }
+  }, [store.sessionId, navigate]);
 
   const handleRoll = async (): Promise<void> => {
     if (spinning) return;
