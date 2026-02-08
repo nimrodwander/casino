@@ -58,12 +58,13 @@ export class GameRouter {
     }
 
     const session = req.session.gameSession;
-    const data = {
-      sessionId: req.session.id,
-      credits: session?.credits || 0,
-      playerId: session?.playerId || '',
-    };
-    res.status(existing ? 200 : 201).json({ data });
+    res.status(existing ? 200 : 201).json({
+      data: {
+        sessionId: req.session.id,
+        credits: session?.credits || 0,
+        playerId: session?.playerId || '',
+      },
+    });
   }
 
   private roll(req: Request, res: Response): void {
@@ -81,12 +82,13 @@ export class GameRouter {
     const result = this.slotMachine.roll(gameSession.credits, DEFAULT_REEL_COUNT);
     gameSession.credits += result.reward;
 
-    const data = {
-      symbols: result.symbols,
-      reward: result.reward,
-      credits: gameSession.credits,
-    };
-    res.json({ data });
+    res.json({
+      data: {
+        symbols: result.symbols,
+        reward: result.reward,
+        credits: gameSession.credits,
+      },
+    });
   }
 
   private async cashOut(req: Request, res: Response): Promise<void> {
@@ -96,14 +98,12 @@ export class GameRouter {
       throw new NotFoundError('No active game session');
     }
 
-    const { credits, playerId } = gameSession;
-
-    await this.gameHistoryRepository.persist(req.session.id, playerId, credits);
+    await this.gameHistoryRepository.persist(req.session.id, gameSession.playerId, gameSession.credits);
     req.session.destroy((err) => err && console.error('Error destroying session:', err));
 
-    const data = {
-      credits,
-    };
-    res.json({ data, message: `Cashed out ${credits} credits. Thanks for playing!` });
+    res.json({
+      data: { credits: gameSession.credits },
+      message: `Cashed out ${gameSession.credits} credits. Thanks for playing!`,
+    });
   }
 }
