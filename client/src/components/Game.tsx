@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom';
 import { DEFAULT_REEL_COUNT } from '../../../shared/src/constants';
 import { useReelReveal } from '../hooks/useReelReveal';
 import { gameStore } from '../stores/GameStore';
-import { CashOutButton } from './CashOutButton';
 import { ReelStrip } from './ReelStrip';
 
 export const Game: React.FC = observer(() => {
@@ -47,10 +46,14 @@ export const Game: React.FC = observer(() => {
           >
             {spinning ? 'Rolling...' : 'Roll'}
           </Button>
-          <CashOutButton
-            onCashOut={handleCashOut}
+          <Button
+            variant="contained"
+            size="large"
+            onClick={handleCashOut}
             disabled={spinning}
-          />
+          >
+            Cash Out
+          </Button>
       </Stack>
     </Box>
   );
