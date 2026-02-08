@@ -52,9 +52,9 @@ describe('Game Routes', () => {
     app = createApp();
   });
 
-  describe('POST /api/game', () => {
+  describe('POST /api/game/games/current', () => {
     it('should create a new session with 10 credits', async () => {
-      const res = await request(app).post('/api/game').send({ playerId: 'test-player' });
+      const res = await request(app).post('/api/game/games/current').send({ playerId: 'test-player' });
       expect(res.status).toBe(201);
       expect(res.body.data.sessionId).toBeDefined();
       expect(res.body.data.credits).toBe(10);
@@ -64,22 +64,22 @@ describe('Game Routes', () => {
     it('should return existing session if one already exists', async () => {
       const agent = request.agent(app);
 
-      const res1 = await agent.post('/api/game').send({ playerId: 'test-player' });
+      const res1 = await agent.post('/api/game/games/current').send({ playerId: 'test-player' });
       expect(res1.status).toBe(201);
 
-      const res2 = await agent.post('/api/game').send({ playerId: 'test-player' });
+      const res2 = await agent.post('/api/game/games/current').send({ playerId: 'test-player' });
       expect(res2.status).toBe(200);
       expect(res2.body.data.sessionId).toBe(res1.body.data.sessionId);
       expect(res2.body.data.credits).toBe(res1.body.data.credits);
     });
   });
 
-  describe('POST /api/game/roll', () => {
+  describe('POST /api/game/games/current/roll', () => {
     it('should return a roll result', async () => {
       const agent = request.agent(app);
-      await agent.post('/api/game').send({ playerId: 'test-player' });
+      await agent.post('/api/game/games/current').send({ playerId: 'test-player' });
 
-      const rollRes = await agent.post('/api/game/roll');
+      const rollRes = await agent.post('/api/game/games/current/roll');
       expect(rollRes.status).toBe(200);
       expect(rollRes.body.data.symbols).toHaveLength(3);
       expect(typeof rollRes.body.data.reward).toBe('number');
@@ -88,11 +88,11 @@ describe('Game Routes', () => {
 
     it('should deduct 1 credit per roll on a loss', async () => {
       const agent = request.agent(app);
-      await agent.post('/api/game').send({ playerId: 'test-player' });
+      await agent.post('/api/game/games/current').send({ playerId: 'test-player' });
 
       let lastCredits = 10;
       for (let i = 0; i < 5; i++) {
-        const rollRes = await agent.post('/api/game/roll');
+        const rollRes = await agent.post('/api/game/games/current/roll');
         if (rollRes.body.data.reward === 0) {
           expect(rollRes.body.data.credits).toBe(lastCredits - 1);
         }
@@ -101,30 +101,30 @@ describe('Game Routes', () => {
     });
 
     it('should return 404 when no session exists', async () => {
-      const res = await request(app).post('/api/game/roll');
+      const res = await request(app).post('/api/game/games/current/roll');
       expect(res.status).toBe(404);
       expect(res.body.message).toBeDefined();
     });
 
     it('should return 404 after cashout', async () => {
       const agent = request.agent(app);
-      await agent.post('/api/game').send({ playerId: 'test-player' });
-      await agent.post('/api/game/cashout');
+      await agent.post('/api/game/games/current').send({ playerId: 'test-player' });
+      await agent.post('/api/game/games/current/persist');
 
-      const rollRes = await agent.post('/api/game/roll');
+      const rollRes = await agent.post('/api/game/games/current/roll');
       expect(rollRes.status).toBe(404);
     });
 
     it('should return 400 when out of credits', async () => {
       const agent = request.agent(app);
-      await agent.post('/api/game').send({ playerId: 'test-player' });
+      await agent.post('/api/game/games/current').send({ playerId: 'test-player' });
 
       let status = 200;
       for (let i = 0; i < 20 && status === 200; i++) {
-        const res = await agent.post('/api/game/roll');
+        const res = await agent.post('/api/game/games/current/roll');
         status = res.status;
         if (res.body.data?.credits === 0 && status === 200) {
-          const nextRes = await agent.post('/api/game/roll');
+          const nextRes = await agent.post('/api/game/games/current/roll');
           expect(nextRes.status).toBe(400);
           expect(nextRes.body.message).toContain('credits');
           return;
@@ -133,12 +133,12 @@ describe('Game Routes', () => {
     });
   });
 
-  describe('POST /api/game/cashout', () => {
+  describe('POST /api/game/games/current/persist', () => {
     it('should cash out and close the session', async () => {
       const agent = request.agent(app);
-      await agent.post('/api/game').send({ playerId: 'test-player' });
+      await agent.post('/api/game/games/current').send({ playerId: 'test-player' });
 
-      const cashoutRes = await agent.post('/api/game/cashout');
+      const cashoutRes = await agent.post('/api/game/games/current/persist');
       expect(cashoutRes.status).toBe(200);
       expect(cashoutRes.body.data.credits).toBe(10);
       expect(cashoutRes.body.message).toContain('Cashed out');
@@ -146,10 +146,10 @@ describe('Game Routes', () => {
 
     it('should persist session to database on cashout', async () => {
       const agent = request.agent(app);
-      const createRes = await agent.post('/api/game').send({ playerId: 'persist-test' });
+      const createRes = await agent.post('/api/game/games/current').send({ playerId: 'persist-test' });
       const { sessionId } = createRes.body.data;
 
-      await agent.post('/api/game/cashout');
+      await agent.post('/api/game/games/current/persist');
 
       const persistedSession = await gameHistoryRepository.findById(sessionId);
       expect(persistedSession).not.toBeNull();
@@ -158,16 +158,16 @@ describe('Game Routes', () => {
     });
 
     it('should return 404 when no session exists', async () => {
-      const res = await request(app).post('/api/game/cashout');
+      const res = await request(app).post('/api/game/games/current/persist');
       expect(res.status).toBe(404);
     });
 
     it('should not allow double cashout', async () => {
       const agent = request.agent(app);
-      await agent.post('/api/game').send({ playerId: 'test-player' });
+      await agent.post('/api/game/games/current').send({ playerId: 'test-player' });
 
-      await agent.post('/api/game/cashout');
-      const res = await agent.post('/api/game/cashout');
+      await agent.post('/api/game/games/current/persist');
+      const res = await agent.post('/api/game/games/current/persist');
       expect(res.status).toBe(404);
     });
   });
