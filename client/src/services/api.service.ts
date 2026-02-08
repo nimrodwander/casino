@@ -8,7 +8,7 @@ class ApiService {
   constructor() {
     this.client = axios.create({
       baseURL: '/api/game/games',
-      withCredentials: true, // Required for cookie-based sessions
+      withCredentials: true,
     });
 
     this.client.interceptors.response.use(

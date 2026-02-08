@@ -5,7 +5,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Game } from '../components/Game';
 import { gameStore } from '../stores/game.store';
 
-// Mock the API service
 vi.mock('../services/api.service', () => ({
   apiService: {
     createSession: vi.fn(),
@@ -38,7 +37,7 @@ describe('Game', () => {
   });
 
   it('should render game UI with reels and buttons', () => {
-    // Set up a game session
+
     gameStore.sessionId = 'test-id';
     gameStore.credits = 10;
 
@@ -47,7 +46,6 @@ describe('Game', () => {
     expect(screen.getByText('Roll')).toBeInTheDocument();
     expect(screen.getByText('Cash Out')).toBeInTheDocument();
     
-    // Each reel displays '-' when idle
     const dashes = screen.getAllByText('-');
     expect(dashes).toHaveLength(3);
   });
@@ -68,7 +66,6 @@ describe('Game', () => {
 
     renderWithTheme();
 
-    // Each reel displays '-' when idle
     const dashes = screen.getAllByText('-');
     expect(dashes).toHaveLength(3);
   });
@@ -86,26 +83,22 @@ describe('Game', () => {
 
     renderWithTheme();
 
-    // Click roll
     await act(async () => {
       fireEvent.click(screen.getByText('Roll'));
     });
 
     expect(screen.getByText('Rolling...')).toBeInTheDocument();
 
-    // Advance 1s: first reel reveals
     await act(async () => {
       vi.advanceTimersByTime(1000);
     });
     expect(screen.getByText('C')).toBeInTheDocument();
 
-    // Advance to 2s: second reel reveals
     await act(async () => {
       vi.advanceTimersByTime(1000);
     });
     expect(screen.getByText('L')).toBeInTheDocument();
 
-    // Advance to 3s: third reel reveals
     await act(async () => {
       vi.advanceTimersByTime(1000);
     });
@@ -131,7 +124,6 @@ describe('Game', () => {
       fireEvent.click(screen.getByText('Roll'));
     });
 
-    // Advance past all reveals
     await act(async () => {
       vi.advanceTimersByTime(3000);
     });

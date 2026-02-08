@@ -33,7 +33,6 @@ beforeAll(async () => {
   });
   await testDataSource.initialize();
 
-  // Override databaseService to use test database
   databaseService.getGameHistoryRepository = (): Repository<GameHistoryEntity> =>
     testDataSource.getRepository(GameHistoryEntity);
   gameHistoryRepository = new GameHistoryRepositoryService();
